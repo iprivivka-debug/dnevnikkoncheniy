@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <title>KONCHENIY тренер</title>
+  <link rel="manifest" href="data:application/manifest+json,{'name':'KONCHENIY%20тренер','short_name':'KONCHENIY','start_url':'.','display':'standalone','background_color':'%23101114','theme_color':'%23101114','icons':[]}">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #101114;
+      --panel: #1b1f25;
+      --panel-2: #222832;
+      --line: #303742;
+      --text: #f4f6f8;
+      --muted: #a5adb8;
+      --soft: #7b8491;
+      --accent: #6ee7a8;
+      --amber: #f2b84b;
+      --danger: #ff7272;
+      --radius: 12px;
+      --shadow: 0 20px 55px rgba(0,0,0,.3);
+      --font-size: 16px;
+      font-family: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--bg); min-height: 100%; overflow-x: hidden; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      color: var(--text);
+      font-size: var(--font-size);
+      line-height: 1.5;
+      background:
+        linear-gradient(135deg, rgba(110,231,168,.08), transparent 35%),
+        linear-gradient(315deg, rgba(242,184,75,.07), transparent 38%),
+        var(--bg);
+      -webkit-tap-highlight-color: transparent;
+      overflow-x: hidden;
+    }
+    button, input, textarea, select { font: inherit; }
+    button { border: 0; cursor: pointer; }
+
+    .app { display: flex; flex-direction: column; min-height: 100dvh; }
+
+    /* Верхняя панель */
+    .topnav {
+      position: sticky; top: 0; z-index: 20;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 16px; background: rgba(18,20,24,.97);
+      border-bottom: 1px solid var(--line); backdrop-filter: blur(12px);
+      padding-top: env(safe-area-inset-top, 8px);
+    }
+    .brand { display: flex; align-items: center; gap: 8px; }
+    .brand-mark {
+      width: 36px; height: 36px; display: grid; place-items: center; flex: 0 0 auto;
+      border-radius: 8px; background: #15191f; border: 1px solid var(--line);
+    }
+    .brand h1 { margin: 0; font-size: 16px; line-height: 1.1; }
+    .icon { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; flex: 0 0 auto; }
+    .brand-mark .icon { width: 24px; height: 24px; color: var(--accent); }
+
+    .nav-desktop { display: flex; gap: 4px; }
+    .nav-desktop .nav-button {
+      min-height: 36px; padding: 6px 10px; display: flex; align-items: center; gap: 6px;
+      border-radius: 8px; background: transparent; color: var(--muted); font-size: 13px;
+      transition: background .16s, color .16s;
+    }
+    .nav-desktop .nav-button:hover, .nav-desktop .nav-button.active { background: var(--panel); color: var(--text); }
+    .nav-desktop .nav-button.active { box-shadow: inset 0 -2px 0 0 var(--accent); }
+
+    .burger-btn {
+      display: none; width: 40px; height: 40px; place-items: center;
+      background: transparent; color: var(--muted); border-radius: 8px;
+    }
+    .burger-btn .icon { width: 24px; height: 24px; }
+
+    .mobile-menu {
+      display: none; position: fixed; top: 56px; left: 0; right: 0; bottom: 0;
+      background: rgba(16,17,20,0.97); backdrop-filter: blur(16px);
+      z-index: 15; flex-direction: column; padding: 24px; gap: 12px;
+      border-top: 1px solid var(--line);
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu .nav-button {
+      min-height: 52px; padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+      border-radius: 12px; background: transparent; color: var(--muted); font-size: 18px;
+    }
+    .mobile-menu .nav-button.active { background: var(--panel); color: var(--text); }
+    .mobile-menu .nav-button .icon { width: 24px; height: 24px; }
+
+    .content { flex: 1; padding: 16px; overflow-y: auto; padding-bottom: env(safe-area-inset-bottom, 16px); }
+
+    .topbar { margin-bottom: 16px; }
+    .topbar h2 { margin: 0; font-size: 24px; line-height: 1.1; }
+    .topbar p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+    .today { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--line); background: #15171b; color: var(--muted); font-size: 13px; margin-top: 8px; }
+
+    .metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 14px; }
+    .metric { padding: 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); }
+    .metric small { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; }
+    .metric strong { display: block; margin-top: 6px; font-size: 22px; line-height: 1.1; }
+    .metric span { display: block; margin-top: 2px; color: var(--soft); font-size: 12px; }
+
+    .view { display: none; }
+    .view.active { display: block; }
+    .layout { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .panel { border: 1px solid var(--line); border-radius: 10px; background: rgba(27,31,37,.96); }
+    .panel-header { padding: 12px 14px; border-bottom: 1px solid var(--line); }
+    .panel-header h3 { margin: 0; font-size: 16px; }
+    .panel-header p { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+    .panel-body { padding: 14px; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .field { display: grid; gap: 5px; }
+    label { color: var(--muted); font-size: 13px; font-weight: 700; }
+    input, select, textarea {
+      width: 100%; min-height: 44px; padding: 8px 10px; color: var(--text);
+      background: #12151a; border: 1px solid var(--line); border-radius: 8px; outline: none;
+      font-size: 15px;
+    }
+    textarea { min-height: 72px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(110,231,168,.14); }
+
+    .sets { display: grid; gap: 8px; margin-top: 12px; }
+    .set-row { display: grid; grid-template-columns: 36px 1fr 1fr 36px; gap: 6px; align-items: end; }
+    .set-number { height: 36px; display: grid; place-items: center; border-radius: 8px; border: 1px solid var(--line); background: #12151a; color: var(--accent); font-weight: 800; font-size: 14px; }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .button { min-height: 44px; padding: 8px 14px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: 8px; background: var(--accent); color: #07100c; font-weight: 800; font-size: 14px; }
+    .button.secondary { background: var(--panel-2); color: var(--text); border: 1px solid var(--line); }
+    .button.ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+    .button.danger { background: var(--danger); color: #180707; }
+    .icon-button { width: 44px; height: 44px; display: inline-grid; place-items: center; border-radius: 8px; color: var(--muted); background: var(--panel-2); border: 1px solid var(--line); }
+
+    .list { display: grid; gap: 8px; }
+    .entry { padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: #15191f; }
+    .entry-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .entry h4 { margin: 0; font-size: 15px; }
+    .muted, .entry time { color: var(--muted); font-size: 12px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+    .chip { padding: 3px 7px; border-radius: 999px; color: var(--muted); background: #20252d; border: 1px solid var(--line); font-size: 12px; }
+
+    .empty { min-height: 100px; display: grid; place-items: center; padding: 20px; color: var(--muted); text-align: center; border: 1px dashed var(--line); border-radius: 8px; background: rgba(18,21,26,.66); }
+    .empty .icon { width: 36px; height: 36px; margin-bottom: 6px; color: var(--accent); }
+
+    .toolbar { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 12px; }
+    .weight-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .body-chart, .exercise-chart { width: 100%; height: 200px; display: block; border: 1px solid var(--line); border-radius: 8px; background: #12151a; }
+
+    .setting-row { padding: 12px 0; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; border-bottom: 1px solid var(--line); }
+    .setting-row:last-child { border-bottom: 0; }
+    .setting-row strong { font-size: 15px; }
+    .setting-row span { color: var(--muted); font-size: 12px; }
+
+    .segmented, .swatches { display: flex; gap: 6px; }
+    .segmented button { min-width: 48px; min-height: 34px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel-2); color: var(--muted); font-weight: 800; font-size: 13px; }
+    .segmented button.active { background: var(--accent); border-color: var(--accent); color: #07100c; }
+    .swatch { width: 30px; height: 30px; border-radius: 50%; border: 2px solid transparent; background: var(--swatch); }
+    .swatch.active { border-color: var(--text); }
+
+    .switch { position: relative; width: 48px; height: 28px; }
+    .switch input { opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+    .slider { position: absolute; inset: 0; border-radius: 999px; background: #2a3039; border: 1px solid var(--line); }
+    .slider:after { content: ""; position: absolute; width: 20px; height: 20px; top: 3px; left: 3px; border-radius: 50%; background: var(--text); transition: transform .16s; }
+    .switch input:checked + .slider { background: var(--accent); }
+    .switch input:checked + .slider:after { transform: translateX(20px); background: #07100c; }
+
+    .toast { position: fixed; top: 16px; right: 16px; z-index: 30; max-width: calc(100vw - 32px); padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; background: #171a20; color: var(--text); box-shadow: var(--shadow); transform: translateY(-10px); opacity: 0; pointer-events: none; transition: opacity .18s, transform .18s; font-size: 14px; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    body.large-text { --font-size: 17px; }
+    body.compact .panel-body, body.compact .panel-header, body.compact .metric, body.compact .entry { padding: 10px; }
+
+    @media (min-width: 720px) {
+      .topnav { padding: 8px 24px; }
+      .brand h1 { font-size: 18px; }
+      .nav-desktop .nav-button { font-size: 14px; }
+      .content { padding: 20px; }
+      .metrics { grid-template-columns: repeat(4, 1fr); }
+      .form-grid { grid-template-columns: 1fr 1fr; }
+      .layout { grid-template-columns: 1fr 1fr; }
+      .toolbar { grid-template-columns: 1fr 160px; }
+      .weight-grid { grid-template-columns: 300px 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .nav-desktop { display: none; }
+      .burger-btn { display: grid; }
+    }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="icon-menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"></path></symbol>
+    <symbol id="icon-dumbbell" viewBox="0 0 24 24"><path d="M5 8v8M2 10v4M8 9v6M16 9v6M19 8v8M22 10v4M8 12h8"></path></symbol>
+    <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></symbol>
+    <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15M10 11v6M14 11v6"></path></symbol>
+    <symbol id="icon-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v6h6M12 7v6l4 2"></path></symbol>
+    <symbol id="icon-scale" viewBox="0 0 24 24"><path d="M5 20h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2ZM8 10a6 6 0 0 1 8 0M12 10v3"></path></symbol>
+    <symbol id="icon-settings" viewBox="0 0 24 24"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1A2 2 0 1 1 4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9L4.2 7A2 2 0 1 1 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1A2 2 0 1 1 19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.1a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"></path></symbol>
+    <symbol id="icon-calendar" viewBox="0 0 24 24"><path d="M7 3v4M17 3v4M4 9h16M5 5h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"></path></symbol>
+    <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"></path></symbol>
+    <symbol id="icon-edit" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></symbol>
+  </svg>
+
+  <div class="app">
+    <header class="topnav">
+      <div class="brand">
+        <div class="brand-mark"><svg class="icon"><use href="#icon-dumbbell"></use></svg></div>
+        <h1>KONCHENIY тренер</h1>
+      </div>
+      <nav class="nav-desktop" id="desktopNav">
+        <button class="nav-button active" data-view="workout"><svg class="icon"><use href="#icon-dumbbell"></use></svg><span>Тренировка</span></button>
+        <button class="nav-button" data-view="history"><svg class="icon"><use href="#icon-history"></use></svg><span>История</span></button>
+        <button class="nav-button" data-view="body"><svg class="icon"><use href="#icon-scale"></use></svg><span>Вес</span></button>
+        <button class="nav-button" data-view="settings"><svg class="icon"><use href="#icon-settings"></use></svg><span>Настройки</span></button>
+      </nav>
+      <button class="burger-btn" id="burgerBtn" aria-label="Меню">
+        <svg class="icon"><use href="#icon-menu"></use></svg>
+      </button>
+    </header>
+
+    <nav class="mobile-menu" id="mobileMenu">
+      <button class="nav-button active" data-view="workout"><svg class="icon"><use href="#icon-dumbbell"></use></svg>Тренировка</button>
+      <button class="nav-button" data-view="history"><svg class="icon"><use href="#icon-history"></use></svg>История</button>
+      <button class="nav-button" data-view="body"><svg class="icon"><use href="#icon-scale"></use></svg>Вес тела</button>
+      <button class="nav-button" data-view="settings"><svg class="icon"><use href="#icon-settings"></use></svg>Настройки</button>
+    </nav>
+
+    <main class="content">
+      <div class="topbar">
+        <div>
+          <h2 id="viewTitle">Тренировка</h2>
+          <p id="viewSubtitle">Запишите упражнение, добавьте подходы и сохраните результат.</p>
+          <div class="today"><svg class="icon"><use href="#icon-calendar"></use></svg><span id="todayLabel"></span></div>
+        </div>
+      </div>
+
+      <section class="metrics">
+        <div class="metric"><small><svg class="icon"><use href="#icon-history"></use></svg>Тренировок</small><strong id="metricWorkouts">0</strong></div>
+        <div class="metric"><small><svg class="icon"><use href="#icon-dumbbell"></use></svg>Тоннаж</small><strong id="metricVolume">0 кг</strong></div>
+        <div class="metric"><small><svg class="icon"><use href="#icon-scale"></use></svg>Вес тела</small><strong id="metricBodyWeight">-</strong></div>
+        <div class="metric"><small><svg class="icon"><use href="#icon-plus"></use></svg>Подходов</small><strong id="metricSets">0</strong></div>
+      </section>
+
+      <section class="view active" id="view-workout">
+        <div class="layout">
+          <form class="panel" id="workoutForm">
+            <div class="panel-header"><h3>Новая запись</h3></div>
+            <div class="panel-body">
+              <div class="form-grid">
+                <div class="field"><label>Дата</label><input type="date" id="workoutDate" required></div>
+                <div class="field"><label>Упражнение</label><input list="exerciseSuggestions" id="exerciseName" placeholder="Жим лежа" autocomplete="off" required><datalist id="exerciseSuggestions"><option value="Жим лежа"><option value="Присед"><option value="Становая тяга"><option value="Жим стоя"><option value="Тяга штанги"><option value="Подтягивания"></datalist><div id="exerciseHint" style="min-height:20px;font-size:12px;color:var(--muted);margin-top:2px;"></div></div>
+                <div class="field" style="grid-column: 1 / -1;"><label>Подходы</label><div class="sets" id="setsContainer"></div></div>
+                <div class="field" style="grid-column: 1 / -1;"><label>Заметка</label><textarea id="workoutNotes" placeholder="Самочувствие, техника..."></textarea></div>
+              </div>
+              <div class="actions">
+                <button class="button secondary" type="button" id="addSetButton"><svg class="icon"><use href="#icon-plus"></use></svg>Подход</button>
+                <button class="button secondary" type="button" id="fillLastButton" style="display:none;">Заполнить</button>
+                <button class="button" type="submit" id="saveWorkoutButton"><svg class="icon"><use href="#icon-download"></use></svg>Сохранить</button>
+                <button class="button ghost" type="button" id="restTimerButton">⏱ 3:00</button>
+              </div>
+            </div>
+          </form>
+          <div class="panel">
+            <div class="panel-header"><h3>Последние записи</h3></div>
+            <div class="panel-body"><div class="list" id="recentList"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-history">
+        <div class="panel">
+          <div class="panel-header"><h3>История тренировок</h3></div>
+          <div class="panel-body">
+            <div class="toolbar">
+              <div class="field"><label>Поиск</label><input id="historySearch" type="search" placeholder="Упражнение"></div>
+              <div class="field"><label>Сортировка</label><select id="historySort"><option value="newest">Новые</option><option value="oldest">Старые</option><option value="volume">Тоннаж</option></select></div>
+            </div>
+            <div class="field" style="margin-bottom:10px;">
+              <label>График упражнения</label>
+              <select id="exerciseChartSelect"><option value="">— выберите —</option></select>
+            </div>
+            <canvas class="exercise-chart" id="exerciseChart" width="400" height="200"></canvas>
+            <div class="list" id="historyList" style="margin-top:10px;"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-body">
+        <div class="weight-grid">
+          <form class="panel" id="bodyWeightForm">
+            <div class="panel-header"><h3>Запись веса</h3></div>
+            <div class="panel-body">
+              <div class="form-grid">
+                <div class="field"><label>Дата</label><input type="date" id="bodyDate" required></div>
+                <div class="field"><label>Вес</label><input type="number" id="bodyWeightInput" min="20" max="400" step="0.1" placeholder="82.5" required></div>
+              </div>
+              <div class="actions"><button class="button" type="submit">Сохранить</button></div>
+            </div>
+          </form>
+          <div class="panel">
+            <div class="panel-header"><h3>Динамика</h3></div>
+            <div class="panel-body">
+              <canvas class="body-chart" id="bodyChart" width="400" height="200"></canvas>
+              <div class="list" id="bodyWeightList" style="margin-top:10px;"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-settings">
+        <div class="panel">
+          <div class="panel-header"><h3>Настройки</h3></div>
+          <div class="panel-body">
+            <div class="setting-row"><div><strong>Единицы веса</strong></div><div class="segmented"><button data-unit="kg">кг</button><button data-unit="lb">lb</button></div></div>
+            <div class="setting-row"><div><strong>Цвет</strong></div><div class="swatches"><button class="swatch" style="--swatch:#6ee7a8" data-accent="#6ee7a8"></button><button class="swatch" style="--swatch:#f2b84b" data-accent="#f2b84b"></button><button class="swatch" style="--swatch:#60d5e8" data-accent="#60d5e8"></button><button class="swatch" style="--swatch:#ff7272" data-accent="#ff7272"></button></div></div>
+            <div class="setting-row"><div><strong>Крупный текст</strong></div><label class="switch"><input type="checkbox" id="largeTextToggle"><span class="slider"></span></label></div>
+            <div class="setting-row"><div><strong>Компактно</strong></div><label class="switch"><input type="checkbox" id="compactToggle"><span class="slider"></span></label></div>
+            <div class="setting-row"><div><strong>Данные</strong></div><div class="actions" style="margin:0"><button class="button secondary" id="exportButton">JSON</button><button class="button secondary" id="exportCSVButton">CSV</button><label class="button ghost" for="importInput">Импорт</label><input type="file" id="importInput" accept="application/json" hidden></div></div>
+            <div class="setting-row"><div><strong>Очистить всё</strong></div><button class="button danger" id="clearButton">Удалить</button></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    (() => {
+      const DB_NAME = 'koncheniy-trainer';
+      const DB_VERSION = 1;
+      let db = null;
+      let useIndexedDB = true;
+
+      const state = {
+        workouts: [],
+        bodyWeights: [],
+        settings: { unit: "kg", accent: "#6ee7a8", largeText: false, compact: false },
+        draftSets: [],
+        editingWorkoutId: null
+      };
+
+      const viewCopy = {
+        workout: ["Тренировка", "Запишите упражнение, добавьте подходы и сохраните результат."],
+        history: ["История", "Смотрите прошлые тренировки, сравнивайте объем и удаляйте лишнее."],
+        body: ["Вес тела", "Сохраняйте собственный вес и следите за динамикой."],
+        settings: ["Настройки", "Подстройте приложение под себя и управляйте данными."]
+      };
+
+      const qs = s => document.querySelector(s);
+      const qsa = s => Array.from(document.querySelectorAll(s));
+      const todayIso = () => new Date().toISOString().slice(0, 10);
+      const uid = () => Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+      const round = v => Math.round(v * 10) / 10;
+      const formatWeight = v => Number.isFinite(v) ? round(v) + " " + state.settings.unit : "-";
+      const workoutVolume = w => w.sets.reduce((sum, s) => sum + (Number(s.weight)||0) * (Number(s.reps)||0), 0);
+      const formatDate = d => new Intl.DateTimeFormat("ru-RU", { day:"2-digit", month:"short", year:"numeric" }).format(new Date(d+"T12:00:00"));
+      const escapeHtml = v => String(v).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+
+      async function openDB() {
+        return new Promise((resolve, reject) => {
+          const req = indexedDB.open(DB_NAME, DB_VERSION);
+          req.onupgradeneeded = e => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains('state')) db.createObjectStore('state');
+          };
+          req.onsuccess = e => resolve(e.target.result);
+          req.onerror = e => reject(e.target.error);
+        });
+      }
+
+      async function saveEverywhere() {
+        const data = { workouts: state.workouts, bodyWeights: state.bodyWeights, settings: state.settings };
+        try { localStorage.setItem('koncheniy-trainer', JSON.stringify(data)); } catch(e) {}
+        try { sessionStorage.setItem('koncheniy-trainer-backup', JSON.stringify(data)); } catch(e) {}
+        if (useIndexedDB) {
+          try {
+            await openDB();
+            const tx = db.transaction('state', 'readwrite');
+            tx.objectStore('state').put(data, 'appData');
+            await tx.complete;
+          } catch (e) { useIndexedDB = false; }
+        }
+      }
+
+      async function loadState() {
+        let data = null;
+        try {
+          if (window.indexedDB) {
+            await openDB();
+            const tx = db.transaction('state', 'readonly');
+            const store = tx.objectStore('state');
+            data = await new Promise((resolve, reject) => {
+              const req = store.get('appData');
+              req.onsuccess = () => resolve(req.result);
+              req.onerror = () => reject(req.error);
+            });
+            useIndexedDB = true;
+          }
+        } catch (e) { useIndexedDB = false; }
+        if (!data) {
+          try { const saved = localStorage.getItem('koncheniy-trainer'); if (saved) data = JSON.parse(saved); } catch(e) {}
+        }
+        if (!data) {
+          try { const saved = sessionStorage.getItem('koncheniy-trainer-backup'); if (saved) data = JSON.parse(saved); } catch(e) {}
+        }
+        if (data) {
+          state.workouts = Array.isArray(data.workouts) ? data.workouts : [];
+          state.bodyWeights = Array.isArray(data.bodyWeights) ? data.bodyWeights : [];
+          state.settings = Object.assign(state.settings, data.settings || {});
+        }
+        await saveEverywhere();
+      }
+
+      let toastTimer;
+      function showToast(msg) {
+        const toast = qs("#toast");
+        toast.textContent = msg;
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 2000);
+      }
+
+      function applySettings() {
+        document.documentElement.style.setProperty("--accent", state.settings.accent);
+        document.body.classList.toggle("large-text", !!state.settings.largeText);
+        document.body.classList.toggle("compact", !!state.settings.compact);
+        qsa("[data-unit]").forEach(b => b.classList.toggle("active", b.dataset.unit === state.settings.unit));
+        qsa(".swatch").forEach(b => b.classList.toggle("active", b.dataset.accent === state.settings.accent));
+        qs("#largeTextToggle").checked = !!state.settings.largeText;
+        qs("#compactToggle").checked = !!state.settings.compact;
+      }
+
+      function setInitialDates() {
+        qs("#workoutDate").value = todayIso();
+        qs("#bodyDate").value = todayIso();
+        qs("#todayLabel").textContent = new Intl.DateTimeFormat("ru-RU", { weekday:"long", day:"2-digit", month:"long" }).format(new Date());
+      }
+
+      function addSet(weight="", reps="") {
+        state.draftSets.push({ id: uid(), weight, reps });
+        renderSets();
+      }
+      function removeSet(id) {
+        state.draftSets = state.draftSets.length <= 1 ? [{ id: uid(), weight:"", reps:"" }] : state.draftSets.filter(s => s.id !== id);
+        renderSets();
+      }
+      function renderSets() {
+        let html = "";
+        state.draftSets.forEach((set, idx) => {
+          html += `<div class="set-row"><div class="set-number">${idx+1}</div><div class="field"><input id="weight-${set.id}" type="number" min="0" step="0.5" value="${escapeHtml(set.weight)}" data-set="${set.id}" data-kind="weight" placeholder="кг"></div><div class="field"><input id="reps-${set.id}" type="number" min="1" step="1" value="${escapeHtml(set.reps)}" data-set="${set.id}" data-kind="reps" placeholder="повт"></div><button class="icon-button" type="button" data-remove-set="${set.id}"><svg class="icon"><use href="#icon-trash"></use></svg></button></div>`;
+        });
+        qs("#setsContainer").innerHTML = html;
+      }
+
+      function emptyState(text) {
+        return `<div class="empty"><svg class="icon"><use href="#icon-dumbbell"></use></svg><div>${escapeHtml(text)}</div></div>`;
+      }
+
+      function workoutCard(workout, showDelete = false, showEdit = false) {
+        const volume = workoutVolume(workout);
+        const chips = workout.sets.map((s, i) => `<span class="chip">${i+1}: ${round(Number(s.weight))}x${Number(s.reps)}</span>`).join("");
+        let actions = "";
+        if (showDelete) actions += `<button class="icon-button" data-delete-workout="${workout.id}"><svg class="icon"><use href="#icon-trash"></use></svg></button>`;
+        if (showEdit) actions += `<button class="icon-button" data-edit-workout="${workout.id}"><svg class="icon"><use href="#icon-edit"></use></svg></button>`;
+        const notes = workout.notes ? `<div class="muted">${escapeHtml(workout.notes)}</div>` : "";
+        return `<div class="entry"><div class="entry-head"><div><h4>${escapeHtml(workout.exercise)}</h4><time>${formatDate(workout.date)}</time></div><div style="display:flex;gap:6px;">${actions}</div></div><div class="chips">${chips}<span class="chip">${formatWeight(volume)}</span></div>${notes}</div>`;
+      }
+
+      function renderMetrics() {
+        const totalVolume = state.workouts.reduce((s, w) => s + workoutVolume(w), 0);
+        const totalSets = state.workouts.reduce((s, w) => s + w.sets.length, 0);
+        const best = state.workouts.reduce((max, w) => Math.max(max, workoutVolume(w)), 0);
+        const latestBody = state.bodyWeights.slice().sort((a,b) => b.date.localeCompare(a.date))[0];
+        qs("#metricWorkouts").textContent = state.workouts.length;
+        qs("#metricVolume").textContent = formatWeight(totalVolume);
+        qs("#metricSets").textContent = totalSets;
+        qs("#metricBodyWeight").textContent = latestBody ? formatWeight(Number(latestBody.weight)) : "-";
+        qs("#bestVolume") && (qs("#bestVolume").textContent = formatWeight(best));
+      }
+
+      function renderRecent() {
+        const recent = state.workouts.slice().sort((a,b) => b.date.localeCompare(a.date)).slice(0,4);
+        qs("#recentList").innerHTML = recent.length ? recent.map(w => workoutCard(w, false, false)).join("") : emptyState("Нет тренировок");
+      }
+
+      function updateExerciseChartSelect() {
+        const exercises = [...new Set(state.workouts.map(w => w.exercise))].sort();
+        const select = qs("#exerciseChartSelect");
+        select.innerHTML = `<option value="">— выберите —</option>` + exercises.map(e => `<option>${e}</option>`).join("");
+      }
+
+      function drawExerciseChart() {
+        const canvas = qs("#exerciseChart");
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const exercise = qs("#exerciseChartSelect").value;
+        if (!exercise) return;
+        const records = state.workouts.filter(w => w.exercise === exercise).sort((a,b) => a.date.localeCompare(b.date));
+        if (!records.length) return;
+        const values = records.map(w => workoutVolume(w));
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        const range = Math.max(1, max - min);
+        const step = records.length === 1 ? 0 : (canvas.width - 60) / (records.length - 1);
+        ctx.strokeStyle = state.settings.accent;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        records.forEach((w, i) => {
+          const x = 30 + step * i;
+          const y = canvas.height - 20 - ((workoutVolume(w) - min) / range) * (canvas.height - 40);
+          i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+      }
+
+      function renderHistory() {
+        const search = qs("#historySearch").value.trim().toLowerCase();
+        const sort = qs("#historySort").value;
+        let workouts = state.workouts.filter(w => w.exercise.toLowerCase().includes(search));
+        workouts.sort((a,b) => {
+          if (sort === "oldest") return a.date.localeCompare(b.date);
+          if (sort === "volume") return workoutVolume(b) - workoutVolume(a);
+          return b.date.localeCompare(a.date);
+        });
+        qs("#historyList").innerHTML = workouts.length ? workouts.map(w => workoutCard(w, true, true)).join("") : emptyState("Пусто");
+        updateExerciseChartSelect();
+        drawExerciseChart();
+      }
+
+      function renderBodyWeights() {
+        const records = state.bodyWeights.slice().sort((a,b) => b.date.localeCompare(a.date));
+        qs("#bodyWeightList").innerHTML = records.length ? records.map(r => `<div class="entry"><div class="entry-head"><div><h4>${formatWeight(Number(r.weight))}</h4><time>${formatDate(r.date)}</time></div><button class="icon-button" data-delete-body="${r.id}"><svg class="icon"><use href="#icon-trash"></use></svg></button></div></div>`).join("") : emptyState("Нет записей веса");
+        drawBodyChart();
+      }
+
+      function drawBodyChart() {
+        const canvas = qs("#bodyChart");
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const records = state.bodyWeights.slice().sort((a,b) => a.date.localeCompare(b.date)).slice(-12);
+        if (!records.length) return;
+        const values = records.map(r => Number(r.weight));
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        const range = Math.max(1, max - min);
+        const step = records.length === 1 ? 0 : (canvas.width - 60) / (records.length - 1);
+        ctx.strokeStyle = state.settings.accent;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        records.forEach((r, i) => {
+          const x = 30 + step * i;
+          const y = canvas.height - 20 - ((Number(r.weight) - min) / range) * (canvas.height - 40);
+          i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+      }
+
+      function setActiveView(view) {
+        document.querySelectorAll('.nav-button').forEach(b => b.classList.remove('active'));
+        document.querySelector(`#desktopNav [data-view="${view}"]`)?.classList.add('active');
+        document.querySelector(`#mobileMenu [data-view="${view}"]`)?.classList.add('active');
+        qsa(".view").forEach(s => s.classList.remove("active"));
+        qs(`#view-${view}`).classList.add("active");
+        qs("#viewTitle").textContent = viewCopy[view][0];
+        qs("#viewSubtitle").textContent = viewCopy[view][1];
+        if (view === "body") drawBodyChart();
+        if (view === "history") { renderHistory(); drawExerciseChart(); }
+        qs("#mobileMenu").classList.remove("open");
+      }
+
+      async function refresh() {
+        applySettings();
+        renderMetrics();
+        renderRecent();
+        renderHistory();
+        renderBodyWeights();
+      }
+
+      function resetDraft() {
+        state.draftSets = [{ id: uid(), weight:"", reps:"" }];
+        state.editingWorkoutId = null;
+        qs("#exerciseName").value = "";
+        qs("#workoutNotes").value = "";
+        qs("#workoutDate").value = todayIso();
+        qs("#saveWorkoutButton").innerHTML = `<svg class="icon"><use href="#icon-download"></use></svg>Сохранить`;
+        qs("#exerciseHint").textContent = "";
+        qs("#fillLastButton").style.display = "none";
+        renderSets();
+      }
+
+      function fillFromLast() {
+        const ex = qs("#exerciseName").value.trim();
+        if (!ex) return;
+        const last = state.workouts.filter(w => w.exercise === ex).sort((a,b) => b.date.localeCompare(a.date))[0];
+        if (!last) { showToast("Нет истории"); return; }
+        state.draftSets = last.sets.map(s => ({ id: uid(), weight: s.weight, reps: s.reps }));
+        renderSets();
+        showToast("Заполнено");
+      }
+
+      function debounce(fn, delay) {
+        let timer;
+        return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), delay); };
+      }
+
+      function initEvents() {
+        // Бургер
+        qs("#burgerBtn").addEventListener("click", () => qs("#mobileMenu").classList.toggle("open"));
+        // Кнопки в мобильном меню
+        qsa("#mobileMenu .nav-button").forEach(b => b.addEventListener("click", () => setActiveView(b.dataset.view)));
+        // Десктопные кнопки
+        qsa("#desktopNav .nav-button").forEach(b => b.addEventListener("click", () => setActiveView(b.dataset.view)));
+
+        qs("#addSetButton").addEventListener("click", () => addSet());
+        qs("#setsContainer").addEventListener("input", e => {
+          const inp = e.target.closest("[data-set]");
+          if (!inp) return;
+          const set = state.draftSets.find(s => s.id === inp.dataset.set);
+          if (set) set[inp.dataset.kind] = inp.value;
+        });
+        qs("#setsContainer").addEventListener("click", e => {
+          const btn = e.target.closest("[data-remove-set]");
+          if (btn) removeSet(btn.dataset.removeSet);
+        });
+
+        const exerciseNameInput = qs("#exerciseName");
+        exerciseNameInput.addEventListener("input", debounce(() => {
+          const ex = exerciseNameInput.value.trim();
+          if (!ex) { qs("#exerciseHint").textContent = ""; qs("#fillLastButton").style.display = "none"; return; }
+          const last = state.workouts.filter(w => w.exercise === ex).sort((a,b) => b.date.localeCompare(a.date))[0];
+          if (last) {
+            qs("#exerciseHint").textContent = `Последняя: ${last.sets.map(s => round(s.weight)+"x"+s.reps).join(", ")} (${formatDate(last.date)})`;
+            qs("#fillLastButton").style.display = "";
+          } else {
+            qs("#exerciseHint").textContent = "Нет истории";
+            qs("#fillLastButton").style.display = "none";
+          }
+        }, 300));
+        qs("#fillLastButton").addEventListener("click", fillFromLast);
+
+        qs("#workoutForm").addEventListener("submit", async e => {
+          e.preventDefault();
+          const sets = state.draftSets.map(s => ({ weight: Number(s.weight), reps: Number(s.reps) })).filter(s => s.weight >= 0 && s.reps > 0);
+          const exercise = exerciseNameInput.value.trim();
+          if (!exercise) { showToast("Введите упражнение"); return; }
+          if (!sets.length) { showToast("Добавьте подход"); return; }
+          if (state.editingWorkoutId) {
+            const idx = state.workouts.findIndex(w => w.id === state.editingWorkoutId);
+            if (idx !== -1) state.workouts[idx] = { ...state.workouts[idx], date: qs("#workoutDate").value || todayIso(), exercise, sets, notes: qs("#workoutNotes").value.trim() };
+          } else {
+            state.workouts.push({ id: uid(), date: qs("#workoutDate").value || todayIso(), exercise, sets, notes: qs("#workoutNotes").value.trim() });
+          }
+          await saveEverywhere();
+          resetDraft();
+          await refresh();
+          showToast("Сохранено");
+        });
+
+        let restTimerId = null;
+        const restBtn = qs("#restTimerButton");
+        restBtn.addEventListener("click", function() {
+          if (restTimerId) {
+            clearInterval(restTimerId);
+            restTimerId = null;
+            restBtn.textContent = "⏱ 3:00";
+            restBtn.disabled = false;
+            return;
+          }
+          let total = 180;
+          restBtn.disabled = true;
+          restTimerId = setInterval(() => {
+            total--;
+            const min = Math.floor(total / 60);
+            const sec = total % 60;
+            restBtn.textContent = `⏱ ${min}:${sec.toString().padStart(2, '0')}`;
+            if (total <= 0) {
+              clearInterval(restTimerId);
+              restTimerId = null;
+              restBtn.textContent = "⏱ 3:00";
+              restBtn.disabled = false;
+              if (navigator.vibrate) navigator.vibrate(200);
+              showToast("Отдых окончен!");
+            }
+          }, 1000);
+        });
+
+        qs("#historySearch").addEventListener("input", debounce(renderHistory, 300));
+        qs("#historySort").addEventListener("change", renderHistory);
+        qs("#exerciseChartSelect").addEventListener("change", drawExerciseChart);
+
+        qs("#historyList").addEventListener("click", async e => {
+          const delBtn = e.target.closest("[data-delete-workout]");
+          if (delBtn) {
+            state.workouts = state.workouts.filter(w => w.id !== delBtn.dataset.deleteWorkout);
+            await saveEverywhere();
+            await refresh();
+            showToast("Удалено");
+            return;
+          }
+          const editBtn = e.target.closest("[data-edit-workout]");
+          if (editBtn) {
+            const workout = state.workouts.find(w => w.id === editBtn.dataset.editWorkout);
+            if (!workout) return;
+            state.editingWorkoutId = workout.id;
+            qs("#exerciseName").value = workout.exercise;
+            qs("#workoutDate").value = workout.date;
+            qs("#workoutNotes").value = workout.notes || "";
+            state.draftSets = workout.sets.map(s => ({ id: uid(), weight: s.weight, reps: s.reps }));
+            renderSets();
+            qs("#saveWorkoutButton").innerHTML = `<svg class="icon"><use href="#icon-download"></use></svg>Обновить`;
+            setActiveView("workout");
+            showToast("Редактирование");
+          }
+        });
+
+        qs("#bodyWeightForm").addEventListener("submit", async e => {
+          e.preventDefault();
+          const weight = Number(qs("#bodyWeightInput").value);
+          if (!Number.isFinite(weight) || weight <= 0) { showToast("Неверный вес"); return; }
+          const date = qs("#bodyDate").value || todayIso();
+          const existing = state.bodyWeights.find(r => r.date === date);
+          if (existing) existing.weight = weight;
+          else state.bodyWeights.push({ id: uid(), date, weight });
+          qs("#bodyWeightInput").value = "";
+          await saveEverywhere();
+          await refresh();
+          showToast("Вес сохранён");
+        });
+
+        qs("#bodyWeightList").addEventListener("click", async e => {
+          const delBtn = e.target.closest("[data-delete-body]");
+          if (!delBtn) return;
+          state.bodyWeights = state.bodyWeights.filter(r => r.id !== delBtn.dataset.deleteBody);
+          await saveEverywhere();
+          await refresh();
+          showToast("Удалено");
+        });
+
+        qsa("[data-unit]").forEach(b => b.addEventListener("click", async () => {
+          state.settings.unit = b.dataset.unit;
+          await saveEverywhere();
+          await refresh();
+          showToast("Единицы: " + b.dataset.unit);
+        }));
+        
+        qsa(".swatch").forEach(b => b.addEventListener("click", async () => {
+          state.settings.accent = b.dataset.accent;
+          await saveEverywhere();
+          await refresh();
+        }));
+        
+        qs("#largeTextToggle").addEventListener("change", async e => {
+          state.settings.largeText = e.target.checked;
+          await saveEverywhere();
+          await refresh();
+        });
+        
+        qs("#compactToggle").addEventListener("change", async e => {
+          state.settings.compact = e.target.checked;
+          await saveEverywhere();
+          await refresh();
+        });
+        
+        qs("#exportButton").addEventListener("click", () => {
+          const blob = new Blob([JSON.stringify({ workouts: state.workouts, bodyWeights: state.bodyWeights, settings: state.settings }, null, 2)], { type: "application/json" });
+          const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "koncheniy-data.json"; a.click();
+        });
+        
+        qs("#exportCSVButton").addEventListener("click", () => {
+          let csv = "Дата;Упражнение;Подход;Вес;Повторы\n";
+          state.workouts.forEach(w => w.sets.forEach((s, i) => csv += `${w.date};${w.exercise};${i+1};${s.weight};${s.reps}\n`));
+          const blob = new Blob([csv], { type: "text/csv" });
+          const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "koncheniy-workouts.csv"; a.click();
+        });
+        
+        qs("#importInput").addEventListener("change", async e => {
+          const file = e.target.files[0];
+          if (!file) return;
+          try {
+            const text = await file.text();
+            const data = JSON.parse(text);
+            state.workouts = Array.isArray(data.workouts) ? data.workouts : [];
+            state.bodyWeights = Array.isArray(data.bodyWeights) ? data.bodyWeights : [];
+            state.settings = Object.assign(state.settings, data.settings || {});
+            await saveEverywhere();
+            await refresh();
+            showToast("Импортировано");
+          } catch { showToast("Ошибка файла"); }
+          e.target.value = "";
+        });
+        
+        qs("#clearButton").addEventListener("click", async () => {
+          if (!confirm("Удалить ВСЕ данные?")) return;
+          state.workouts = [];
+          state.bodyWeights = [];
+          await saveEverywhere();
+          await refresh();
+          showToast("Всё очищено");
+        });
+        
+        window.addEventListener("resize", () => { drawBodyChart(); drawExerciseChart(); });
+        window.addEventListener("beforeunload", () => saveEverywhere());
+        window.addEventListener("pagehide", () => saveEverywhere());
+      }
+
+      (async () => {
+        try { await loadState(); } catch (e) { showToast("Ошибка загрузки"); }
+        setInitialDates();
+        resetDraft();
+        initEvents();
+        await refresh();
+      })();
+    })();
+  </script>
+</body>
+</html>
