@@ -3,10 +3,24 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+
+  <!-- PWA для iOS (скрывает адресную строку, свою иконку) -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="KONCHENIY">
+
+  <!-- Твои иконки (должны лежать в корне сайта) -->
+  <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icon-152.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="icon-120.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+  <meta name="theme-color" content="#101114">
+
+  <!-- Манифест для Android -->
+  <link rel="manifest" href="data:application/manifest+json,{'name':'KONCHENIY%20тренер','short_name':'KONCHENIY','start_url':'.','display':'standalone','background_color':'%23101114','theme_color':'%23101114','icons':[{'src':'icon-192.png','sizes':'192x192','type':'image/png'},{'src':'icon-512.png','sizes':'512x512','type':'image/png'}]}">
+
   <title>KONCHENIY тренер</title>
-  <link rel="manifest" href="data:application/manifest+json,{'name':'KONCHENIY%20тренер','short_name':'KONCHENIY','start_url':'.','display':'standalone','background_color':'%23101114','theme_color':'%23101114','icons':[]}">
   <style>
     :root {
       color-scheme: dark;
@@ -45,7 +59,6 @@
 
     .app { display: flex; flex-direction: column; min-height: 100dvh; }
 
-    /* Верхняя панель */
     .topnav {
       position: sticky; top: 0; z-index: 20;
       display: flex; align-items: center; justify-content: space-between;
@@ -610,11 +623,8 @@
       }
 
       function initEvents() {
-        // Бургер
         qs("#burgerBtn").addEventListener("click", () => qs("#mobileMenu").classList.toggle("open"));
-        // Кнопки в мобильном меню
         qsa("#mobileMenu .nav-button").forEach(b => b.addEventListener("click", () => setActiveView(b.dataset.view)));
-        // Десктопные кнопки
         qsa("#desktopNav .nav-button").forEach(b => b.addEventListener("click", () => setActiveView(b.dataset.view)));
 
         qs("#addSetButton").addEventListener("click", () => addSet());
