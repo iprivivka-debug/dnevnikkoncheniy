@@ -3,20 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-
-  <!-- 👇 Скрывает строку Safari при открытии с главного экрана -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="KONCHENIY">
-
-  <!-- Твои иконки (убедись, что файлы называются icon-192.png и icon-512.png) -->
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
-
-  <!-- Манифест для Android (чтобы тоже скрывать адресную строку) -->
   <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22KONCHENIY%20%D1%82%D1%80%D0%B5%D0%BD%D0%B5%D1%80%22%2C%22short_name%22%3A%22KONCHENIY%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23101114%22%2C%22theme_color%22%3A%22%23101114%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22icon-192.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%2C%7B%22src%22%3A%22icon-512.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
-
   <meta name="theme-color" content="#101114">
   <title>KONCHENIY тренер</title>
   <style>
@@ -51,6 +44,10 @@
         var(--bg);
       -webkit-tap-highlight-color: transparent;
       overflow-x: hidden;
+      transition: background-color 0.2s ease;
+    }
+    body.flash {
+      background-color: white !important;
     }
     button, input, textarea, select { font: inherit; }
     button { border: 0; cursor: pointer; }
@@ -215,6 +212,8 @@
     <symbol id="icon-calendar" viewBox="0 0 24 24"><path d="M7 3v4M17 3v4M4 9h16M5 5h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"></path></symbol>
     <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"></path></symbol>
     <symbol id="icon-edit" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></symbol>
+    <symbol id="icon-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"></path></symbol>
+    <symbol id="icon-play" viewBox="0 0 24 24"><path d="M6 4l15 8-15 8z"></path></symbol>
   </svg>
 
   <div class="app">
@@ -264,7 +263,7 @@
             <div class="panel-body">
               <div class="form-grid">
                 <div class="field"><label>Дата</label><input type="date" id="workoutDate" required></div>
-                <div class="field"><label>Упражнение</label><input list="exerciseSuggestions" id="exerciseName" placeholder="Жим лежа" autocomplete="off" required><datalist id="exerciseSuggestions"><option value="Жим лежа"><option value="Присед"><option value="Становая тяга"><option value="Жим стоя"><option value="Тяга штанги"><option value="Подтягивания"></datalist><div id="exerciseHint" style="min-height:20px;font-size:12px;color:var(--muted);margin-top:2px;"></div></div>
+                <div class="field"><label>Упражнение</label><input list="exerciseSuggestions" id="exerciseName" placeholder="Жим лежа" autocomplete="off" required><datalist id="exerciseSuggestions"><option value="Жим лежа"><option value="Присед"><option value="Становая тяга"><option value="Жим стоя"><option value="Тяга штанги"><option value="Подтягивания"><option value="Отжимания"><option value="Пресс"><option value="Планка"></datalist><div id="exerciseHint" style="min-height:20px;font-size:12px;color:var(--muted);margin-top:2px;"></div></div>
                 <div class="field" style="grid-column: 1 / -1;"><label>Подходы</label><div class="sets" id="setsContainer"></div></div>
                 <div class="field" style="grid-column: 1 / -1;"><label>Заметка</label><textarea id="workoutNotes" placeholder="Самочувствие, техника..."></textarea></div>
               </div>
@@ -272,7 +271,18 @@
                 <button class="button secondary" type="button" id="addSetButton"><svg class="icon"><use href="#icon-plus"></use></svg>Подход</button>
                 <button class="button secondary" type="button" id="fillLastButton" style="display:none;">Заполнить</button>
                 <button class="button" type="submit" id="saveWorkoutButton"><svg class="icon"><use href="#icon-download"></use></svg>Сохранить</button>
-                <button class="button ghost" type="button" id="restTimerButton">⏱ 3:00</button>
+                <div style="display:flex; align-items:center; gap:8px; margin-left:auto;">
+                  <div class="field" style="width:70px; gap:2px;">
+                    <label style="font-size:11px;">Мин</label>
+                    <input type="number" id="restMinutes" value="3" min="0" max="99" step="1" style="min-height:36px; text-align:center;">
+                  </div>
+                  <div class="field" style="width:70px; gap:2px;">
+                    <label style="font-size:11px;">Сек</label>
+                    <input type="number" id="restSeconds" value="00" min="0" max="59" step="1" style="min-height:36px; text-align:center;">
+                  </div>
+                  <button class="button ghost" type="button" id="restTimerButton">⏱ 3:00</button>
+                  <button class="icon-button" type="button" id="restPauseButton" disabled><svg class="icon"><use href="#icon-pause"></use></svg></button>
+                </div>
               </div>
             </div>
           </form>
@@ -437,6 +447,14 @@
         toastTimer = setTimeout(() => toast.classList.remove("show"), 2000);
       }
 
+      function flashScreen() {
+        document.body.classList.add('flash');
+        setTimeout(() => document.body.classList.remove('flash'), 150);
+        setTimeout(() => document.body.classList.add('flash'), 250);
+        setTimeout(() => document.body.classList.remove('flash'), 350);
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+      }
+
       function applySettings() {
         document.documentElement.style.setProperty("--accent", state.settings.accent);
         document.body.classList.toggle("large-text", !!state.settings.largeText);
@@ -464,7 +482,7 @@
       function renderSets() {
         let html = "";
         state.draftSets.forEach((set, idx) => {
-          html += `<div class="set-row"><div class="set-number">${idx+1}</div><div class="field"><input id="weight-${set.id}" type="number" min="0" step="0.5" value="${escapeHtml(set.weight)}" data-set="${set.id}" data-kind="weight" placeholder="кг"></div><div class="field"><input id="reps-${set.id}" type="number" min="1" step="1" value="${escapeHtml(set.reps)}" data-set="${set.id}" data-kind="reps" placeholder="повт"></div><button class="icon-button" type="button" data-remove-set="${set.id}"><svg class="icon"><use href="#icon-trash"></use></svg></button></div>`;
+          html += `<div class="set-row"><div class="set-number">${idx+1}</div><div class="field"><input id="weight-${set.id}" type="number" min="0" step="0.5" value="${escapeHtml(set.weight)}" data-set="${set.id}" data-kind="weight" placeholder="кг (0 если свой вес)"></div><div class="field"><input id="reps-${set.id}" type="number" min="1" step="1" value="${escapeHtml(set.reps)}" data-set="${set.id}" data-kind="reps" placeholder="повт"></div><button class="icon-button" type="button" data-remove-set="${set.id}"><svg class="icon"><use href="#icon-trash"></use></svg></button></div>`;
         });
         qs("#setsContainer").innerHTML = html;
       }
@@ -654,10 +672,10 @@
 
         qs("#workoutForm").addEventListener("submit", async e => {
           e.preventDefault();
-          const sets = state.draftSets.map(s => ({ weight: Number(s.weight), reps: Number(s.reps) })).filter(s => s.weight >= 0 && s.reps > 0);
+          const sets = state.draftSets.map(s => ({ weight: Number(s.weight)||0, reps: Number(s.reps) })).filter(s => s.reps > 0);
           const exercise = exerciseNameInput.value.trim();
           if (!exercise) { showToast("Введите упражнение"); return; }
-          if (!sets.length) { showToast("Добавьте подход"); return; }
+          if (!sets.length) { showToast("Добавьте хотя бы один подход (повторы > 0)"); return; }
           if (state.editingWorkoutId) {
             const idx = state.workouts.findIndex(w => w.id === state.editingWorkoutId);
             if (idx !== -1) state.workouts[idx] = { ...state.workouts[idx], date: qs("#workoutDate").value || todayIso(), exercise, sets, notes: qs("#workoutNotes").value.trim() };
@@ -670,32 +688,85 @@
           showToast("Сохранено");
         });
 
+        // Таймер с паузой и вспышкой
         let restTimerId = null;
+        let restSecondsLeft = 180;
         const restBtn = qs("#restTimerButton");
-        restBtn.addEventListener("click", function() {
-          if (restTimerId) {
-            clearInterval(restTimerId);
-            restTimerId = null;
-            restBtn.textContent = "⏱ 3:00";
-            restBtn.disabled = false;
-            return;
-          }
-          let total = 180;
+        const restPauseBtn = qs("#restPauseButton");
+        const minsInput = qs("#restMinutes");
+        const secsInput = qs("#restSeconds");
+
+        function updateTimerDisplay() {
+          const min = Math.floor(restSecondsLeft / 60);
+          const sec = restSecondsLeft % 60;
+          restBtn.textContent = `⏱ ${min}:${sec.toString().padStart(2, '0')}`;
+        }
+
+        function stopTimer() {
+          if (restTimerId) { clearInterval(restTimerId); restTimerId = null; }
+          restPauseBtn.innerHTML = '<svg class="icon"><use href="#icon-pause"></use></svg>';
+          restPauseBtn.disabled = true;
+          restBtn.disabled = false;
+        }
+
+        function startTimer() {
+          if (restSecondsLeft <= 0) return;
           restBtn.disabled = true;
+          restPauseBtn.disabled = false;
+          restPauseBtn.innerHTML = '<svg class="icon"><use href="#icon-pause"></use></svg>';
           restTimerId = setInterval(() => {
-            total--;
-            const min = Math.floor(total / 60);
-            const sec = total % 60;
-            restBtn.textContent = `⏱ ${min}:${sec.toString().padStart(2, '0')}`;
-            if (total <= 0) {
-              clearInterval(restTimerId);
-              restTimerId = null;
-              restBtn.textContent = "⏱ 3:00";
-              restBtn.disabled = false;
-              if (navigator.vibrate) navigator.vibrate(200);
+            restSecondsLeft--;
+            updateTimerDisplay();
+            if (restSecondsLeft <= 0) {
+              stopTimer();
+              updateTimerDisplay();
+              flashScreen();
               showToast("Отдых окончен!");
+              restSecondsLeft = (parseInt(minsInput.value)||3)*60 + (parseInt(secsInput.value)||0);
+              updateTimerDisplay();
             }
           }, 1000);
+        }
+
+        restBtn.addEventListener("click", () => {
+          if (restTimerId) {
+            // Остановить совсем
+            stopTimer();
+            restSecondsLeft = (parseInt(minsInput.value)||3)*60 + (parseInt(secsInput.value)||0);
+            updateTimerDisplay();
+          } else {
+            // Запустить
+            if (restSecondsLeft <= 0) {
+              restSecondsLeft = (parseInt(minsInput.value)||3)*60 + (parseInt(secsInput.value)||0);
+              updateTimerDisplay();
+            }
+            startTimer();
+          }
+        });
+
+        restPauseBtn.addEventListener("click", () => {
+          if (!restTimerId) return;
+          // Пауза/продолжить
+          clearInterval(restTimerId);
+          restTimerId = null;
+          restPauseBtn.innerHTML = '<svg class="icon"><use href="#icon-play"></use></svg>';
+          restPauseBtn.onclick = () => {
+            restPauseBtn.innerHTML = '<svg class="icon"><use href="#icon-pause"></use></svg>';
+            startTimer();
+          };
+        });
+
+        minsInput.addEventListener("change", () => {
+          if (!restTimerId) {
+            restSecondsLeft = (parseInt(minsInput.value)||3)*60 + (parseInt(secsInput.value)||0);
+            updateTimerDisplay();
+          }
+        });
+        secsInput.addEventListener("change", () => {
+          if (!restTimerId) {
+            restSecondsLeft = (parseInt(minsInput.value)||3)*60 + (parseInt(secsInput.value)||0);
+            updateTimerDisplay();
+          }
         });
 
         qs("#historySearch").addEventListener("input", debounce(renderHistory, 300));
