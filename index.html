@@ -46,9 +46,7 @@
       overflow-x: hidden;
       transition: background-color 0.2s ease;
     }
-    body.flash {
-      background-color: white !important;
-    }
+    body.flash { background-color: white !important; }
     button, input, textarea, select { font: inherit; }
     button { border: 0; cursor: pointer; }
 
@@ -156,7 +154,7 @@
 
     .toolbar { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 12px; }
     .weight-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-    .body-chart, .exercise-chart { width: 100%; height: 200px; display: block; border: 1px solid var(--line); border-radius: 8px; background: #12151a; }
+    .body-chart, .exercise-chart { width: 100%; height: 200px; display: block; border: 1px solid var(--line); border-radius: 8px; background: #12151a; touch-action: none; }
 
     .setting-row { padding: 12px 0; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; border-bottom: 1px solid var(--line); }
     .setting-row:last-child { border-bottom: 0; }
@@ -181,6 +179,36 @@
 
     body.large-text { --font-size: 17px; }
     body.compact .panel-body, body.compact .panel-header, body.compact .metric, body.compact .entry { padding: 10px; }
+
+    .exercise-gif {
+      width: 100%;
+      max-width: 300px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #12151a;
+      overflow: hidden;
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .exercise-gif img { width: 100%; height: 100%; object-fit: cover; }
+    .exercise-gif .placeholder { color: var(--muted); font-size: 13px; text-align: center; padding: 12px; }
+
+    .zoom-buttons { display: flex; gap: 6px; margin-bottom: 8px; }
+    .zoom-buttons button { min-height: 36px; min-width: 36px; padding: 4px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; background: var(--panel-2); color: var(--text); border: 1px solid var(--line); font-size: 18px; }
+
+    .photo-preview { max-width: 120px; border-radius: 8px; border: 1px solid var(--line); margin-top: 5px; }
+    .photo-fullscreen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 40; display: none; align-items: center; justify-content: center; }
+    .photo-fullscreen img { max-width: 90vw; max-height: 90vh; border-radius: 8px; }
+    .photo-fullscreen .close-btn { position: absolute; top: 20px; right: 20px; background: var(--danger); color: white; width: 44px; height: 44px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+    .metric-toggle { display: flex; gap: 6px; margin-bottom: 8px; }
+    .metric-toggle button { min-height: 36px; padding: 4px 12px; border-radius: 8px; background: var(--panel-2); color: var(--muted); border: 1px solid var(--line); font-size: 13px; }
+    .metric-toggle button.active { background: var(--accent); color: #07100c; }
+
+    .chart-container { position: relative; }
 
     @media (min-width: 720px) {
       .topnav { padding: 8px 24px; }
@@ -214,6 +242,9 @@
     <symbol id="icon-edit" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></symbol>
     <symbol id="icon-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"></path></symbol>
     <symbol id="icon-play" viewBox="0 0 24 24"><path d="M6 4l15 8-15 8z"></path></symbol>
+    <symbol id="icon-clipboard" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></symbol>
+    <symbol id="icon-camera" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></symbol>
+    <symbol id="icon-expand" viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></symbol>
   </svg>
 
   <div class="app">
@@ -225,6 +256,7 @@
       <nav class="nav-desktop" id="desktopNav">
         <button class="nav-button active" data-view="workout"><svg class="icon"><use href="#icon-dumbbell"></use></svg><span>Тренировка</span></button>
         <button class="nav-button" data-view="history"><svg class="icon"><use href="#icon-history"></use></svg><span>История</span></button>
+        <button class="nav-button" data-view="plans"><svg class="icon"><use href="#icon-clipboard"></use></svg><span>Планы</span></button>
         <button class="nav-button" data-view="body"><svg class="icon"><use href="#icon-scale"></use></svg><span>Вес</span></button>
         <button class="nav-button" data-view="settings"><svg class="icon"><use href="#icon-settings"></use></svg><span>Настройки</span></button>
       </nav>
@@ -236,6 +268,7 @@
     <nav class="mobile-menu" id="mobileMenu">
       <button class="nav-button active" data-view="workout"><svg class="icon"><use href="#icon-dumbbell"></use></svg>Тренировка</button>
       <button class="nav-button" data-view="history"><svg class="icon"><use href="#icon-history"></use></svg>История</button>
+      <button class="nav-button" data-view="plans"><svg class="icon"><use href="#icon-clipboard"></use></svg>Планы</button>
       <button class="nav-button" data-view="body"><svg class="icon"><use href="#icon-scale"></use></svg>Вес тела</button>
       <button class="nav-button" data-view="settings"><svg class="icon"><use href="#icon-settings"></use></svg>Настройки</button>
     </nav>
@@ -256,6 +289,7 @@
         <div class="metric"><small><svg class="icon"><use href="#icon-plus"></use></svg>Подходов</small><strong id="metricSets">0</strong></div>
       </section>
 
+      <!-- Тренировка -->
       <section class="view active" id="view-workout">
         <div class="layout">
           <form class="panel" id="workoutForm">
@@ -293,6 +327,7 @@
         </div>
       </section>
 
+      <!-- История -->
       <section class="view" id="view-history">
         <div class="panel">
           <div class="panel-header"><h3>История тренировок</h3></div>
@@ -305,12 +340,44 @@
               <label>График упражнения</label>
               <select id="exerciseChartSelect"><option value="">— выберите —</option></select>
             </div>
-            <canvas class="exercise-chart" id="exerciseChart" width="400" height="200"></canvas>
+            <div class="metric-toggle">
+              <button id="metricToggleVolume" class="active">Тоннаж</button>
+              <button id="metricToggleMaxWeight">Макс. вес</button>
+              <button class="button secondary" id="expandChartBtn" style="margin-left:auto;"><svg class="icon"><use href="#icon-expand"></use></svg> Развернуть</button>
+            </div>
+            <div class="chart-container">
+              <canvas class="exercise-chart" id="exerciseChart" width="400" height="200"></canvas>
+            </div>
             <div class="list" id="historyList" style="margin-top:10px;"></div>
           </div>
         </div>
       </section>
 
+      <!-- Планы -->
+      <section class="view" id="view-plans">
+        <div id="planListContainer">
+          <div class="panel">
+            <div class="panel-header"><h3>Тренировочные планы</h3></div>
+            <div class="panel-body"><div class="list" id="planList"></div></div>
+          </div>
+        </div>
+        <div id="planDetailContainer" style="display:none;">
+          <div class="panel">
+            <div class="panel-header" style="display:flex; align-items:center; gap:8px;">
+              <button class="icon-button" id="backToPlans"><svg class="icon"><use href="#icon-menu"></use></svg></button>
+              <h3 id="planDetailTitle"></h3>
+            </div>
+            <div class="panel-body">
+              <div id="planExercises"></div>
+              <div class="actions">
+                <button class="button" id="finishPlanWorkout">Завершить тренировку</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Вес тела -->
       <section class="view" id="view-body">
         <div class="weight-grid">
           <form class="panel" id="bodyWeightForm">
@@ -319,6 +386,11 @@
               <div class="form-grid">
                 <div class="field"><label>Дата</label><input type="date" id="bodyDate" required></div>
                 <div class="field"><label>Вес</label><input type="number" id="bodyWeightInput" min="20" max="400" step="0.1" placeholder="82.5" required></div>
+                <div class="field">
+                  <label>Фото (необязательно)</label>
+                  <input type="file" id="bodyPhotoInput" accept="image/*" capture="environment">
+                  <img id="bodyPhotoPreview" class="photo-preview" style="display:none;">
+                </div>
               </div>
               <div class="actions"><button class="button" type="submit">Сохранить</button></div>
             </div>
@@ -326,13 +398,25 @@
           <div class="panel">
             <div class="panel-header"><h3>Динамика</h3></div>
             <div class="panel-body">
-              <canvas class="body-chart" id="bodyChart" width="400" height="200"></canvas>
+              <div class="zoom-buttons">
+                <button id="zoomInBody">+</button>
+                <button id="zoomOutBody">–</button>
+                <span id="bodyZoomLabel" style="color:var(--muted); font-size:12px;">Последние 12</span>
+              </div>
+              <div class="chart-container">
+                <canvas class="body-chart" id="bodyChart" width="400" height="200"></canvas>
+              </div>
               <div class="list" id="bodyWeightList" style="margin-top:10px;"></div>
             </div>
           </div>
         </div>
+        <div class="photo-fullscreen" id="photoFullscreen">
+          <button class="close-btn" id="closePhotoBtn">✕</button>
+          <img id="photoFullImage" src="" alt="Фото веса">
+        </div>
       </section>
 
+      <!-- Настройки -->
       <section class="view" id="view-settings">
         <div class="panel">
           <div class="panel-header"><h3>Настройки</h3></div>
@@ -363,14 +447,47 @@
         bodyWeights: [],
         settings: { unit: "kg", accent: "#6ee7a8", largeText: false, compact: false },
         draftSets: [],
-        editingWorkoutId: null
+        editingWorkoutId: null,
+        currentPlanId: null,
+        planExercisesSets: {},
+        bodyZoomCount: 12,
+        exerciseZoomCount: 12,
+        bodyPhotoData: null,
+        exerciseChartMetric: 'volume',
+        // для интерактивного графика
+        exerciseChartTransform: { offsetX: 0, offsetY: 0, scale: 1 },
+        bodyChartTransform: { offsetX: 0, offsetY: 0, scale: 1 }
       };
 
-      const viewCopy = {
-        workout: ["Тренировка", "Запишите упражнение, добавьте подходы и сохраните результат."],
-        history: ["История", "Смотрите прошлые тренировки, сравнивайте объем и удаляйте лишнее."],
-        body: ["Вес тела", "Сохраняйте собственный вес и следите за динамикой."],
-        settings: ["Настройки", "Подстройте приложение под себя и управляйте данными."]
+      const plans = {
+        "bro-split": {
+          name: "Bro Split",
+          description: "Классический бодибилдерский сплит: грудь, спина, ноги, плечи, руки.",
+          exercises: [
+            { name: "Жим лежа", desc: "Грудные мышцы. 3-4 подхода по 8-12 повторений.", gif: "" },
+            { name: "Разводка гантелей", desc: "Грудные. 3 подхода по 10-15.", gif: "" },
+            { name: "Тяга штанги в наклоне", desc: "Спина. 4 подхода по 8-10.", gif: "" },
+            { name: "Подтягивания", desc: "Широчайшие. Максимум повторений.", gif: "" },
+            { name: "Приседания со штангой", desc: "Ноги. 4 подхода по 8-12.", gif: "" },
+            { name: "Становая тяга", desc: "Ноги/спина. 3 подхода по 6-8.", gif: "" },
+            { name: "Жим стоя", desc: "Плечи. 4 подхода по 8-12.", gif: "" },
+            { name: "Подъем штанги на бицепс", desc: "Бицепс. 3 подхода по 10-12.", gif: "" },
+            { name: "Французский жим", desc: "Трицепс. 3 подхода по 10-12.", gif: "" }
+          ]
+        },
+        "full-body": {
+          name: "Full Body",
+          description: "Тренировка всего тела за одно занятие. Подходит для новичков и восстановления.",
+          exercises: [
+            { name: "Приседания", desc: "Ноги, ягодицы. 3 подхода по 10-15.", gif: "" },
+            { name: "Жим лежа", desc: "Грудь, трицепс. 3 подхода по 8-12.", gif: "" },
+            { name: "Тяга верхнего блока", desc: "Спина, бицепс. 3 подхода по 10-12.", gif: "" },
+            { name: "Жим стоя", desc: "Плечи. 3 подхода по 8-12.", gif: "" },
+            { name: "Подъем на бицепс", desc: "Бицепс. 3 подхода по 12-15.", gif: "" },
+            { name: "Отжимания на брусьях", desc: "Трицепс, грудь. 3 подхода до отказа.", gif: "" },
+            { name: "Планка", desc: "Пресс. 3 подхода по 30-60 секунд.", gif: "" }
+          ]
+        }
       };
 
       const qs = s => document.querySelector(s);
@@ -383,6 +500,7 @@
       const formatDate = d => new Intl.DateTimeFormat("ru-RU", { day:"2-digit", month:"short", year:"numeric" }).format(new Date(d+"T12:00:00"));
       const escapeHtml = v => String(v).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 
+      // База данных
       async function openDB() {
         return new Promise((resolve, reject) => {
           const req = indexedDB.open(DB_NAME, DB_VERSION);
@@ -471,20 +589,37 @@
         qs("#todayLabel").textContent = new Intl.DateTimeFormat("ru-RU", { weekday:"long", day:"2-digit", month:"long" }).format(new Date());
       }
 
-      function addSet(weight="", reps="") {
-        state.draftSets.push({ id: uid(), weight, reps });
-        renderSets();
-      }
-      function removeSet(id) {
-        state.draftSets = state.draftSets.length <= 1 ? [{ id: uid(), weight:"", reps:"" }] : state.draftSets.filter(s => s.id !== id);
-        renderSets();
-      }
+      // Черновик тренировки
+      function addSet(weight="", reps="") { state.draftSets.push({ id: uid(), weight, reps }); renderSets(); }
+      function removeSet(id) { state.draftSets = state.draftSets.length <= 1 ? [{ id: uid(), weight:"", reps:"" }] : state.draftSets.filter(s => s.id !== id); renderSets(); }
       function renderSets() {
         let html = "";
         state.draftSets.forEach((set, idx) => {
           html += `<div class="set-row"><div class="set-number">${idx+1}</div><div class="field"><input id="weight-${set.id}" type="number" min="0" step="0.5" value="${escapeHtml(set.weight)}" data-set="${set.id}" data-kind="weight" placeholder="кг (0 если свой вес)"></div><div class="field"><input id="reps-${set.id}" type="number" min="1" step="1" value="${escapeHtml(set.reps)}" data-set="${set.id}" data-kind="reps" placeholder="повт"></div><button class="icon-button" type="button" data-remove-set="${set.id}"><svg class="icon"><use href="#icon-trash"></use></svg></button></div>`;
         });
         qs("#setsContainer").innerHTML = html;
+      }
+
+      function resetDraft() {
+        state.draftSets = [{ id: uid(), weight:"", reps:"" }];
+        state.editingWorkoutId = null;
+        qs("#exerciseName").value = "";
+        qs("#workoutNotes").value = "";
+        qs("#workoutDate").value = todayIso();
+        qs("#saveWorkoutButton").innerHTML = `<svg class="icon"><use href="#icon-download"></use></svg>Сохранить`;
+        qs("#exerciseHint").textContent = "";
+        qs("#fillLastButton").style.display = "none";
+        renderSets();
+      }
+
+      function fillFromLast() {
+        const ex = qs("#exerciseName").value.trim();
+        if (!ex) return;
+        const last = state.workouts.filter(w => w.exercise === ex).sort((a,b) => b.date.localeCompare(a.date))[0];
+        if (!last) { showToast("Нет истории"); return; }
+        state.draftSets = last.sets.map(s => ({ id: uid(), weight: s.weight, reps: s.reps }));
+        renderSets();
+        showToast("Заполнено");
       }
 
       function emptyState(text) {
@@ -524,28 +659,317 @@
         select.innerHTML = `<option value="">— выберите —</option>` + exercises.map(e => `<option>${e}</option>`).join("");
       }
 
+      // Интерактивные графики с поддержкой touch
+      function setupChartInteraction(canvasId, transformKey, drawFn) {
+  const canvas = qs(canvasId);
+  let isPanning = false;
+  let lastX = 0, lastY = 0;
+  let initialDistance = 0;
+  let initialScale = 1;
+  let initialTransform = { offsetX: 0, offsetY: 0 };
+
+  canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    const touches = e.touches;
+    if (touches.length === 1) {
+      isPanning = true;
+      lastX = touches[0].clientX;
+      lastY = touches[0].clientY;
+    } else if (touches.length === 2) {
+      isPanning = false;
+      initialDistance = Math.hypot(
+        touches[0].clientX - touches[1].clientX,
+        touches[0].clientY - touches[1].clientY
+      );
+      initialScale = state[transformKey].scale;
+      initialTransform = { ...state[transformKey] };
+    }
+  });
+
+  canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    const touches = e.touches;
+    if (touches.length === 1 && isPanning) {
+      const dx = (touches[0].clientX - lastX);
+      const dy = (touches[0].clientY - lastY);
+      state[transformKey].offsetX += dx;
+      state[transformKey].offsetY += dy;
+      lastX = touches[0].clientX;
+      lastY = touches[0].clientY;
+      drawFn();
+    } else if (touches.length === 2) {
+      const currentDistance = Math.hypot(
+        touches[0].clientX - touches[1].clientX,
+        touches[0].clientY - touches[1].clientY
+      );
+      if (initialDistance > 0) {
+        state[transformKey].scale = Math.max(0.5, Math.min(3, initialScale * (currentDistance / initialDistance)));
+        drawFn();
+      }
+    }
+  });
+
+  canvas.addEventListener('touchend', () => {
+    isPanning = false;
+  });
+}
+
       function drawExerciseChart() {
-        const canvas = qs("#exerciseChart");
-        const ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const canvas = qs("#exerciseChart");
+  const ctx = canvas.getContext("2d");
+  const width = canvas.width;
+  const height = canvas.height;
+  ctx.clearRect(0, 0, width, height);
+
+  const exercise = qs("#exerciseChartSelect").value;
+  if (!exercise) return;
+
+  let records = state.workouts
+    .filter(w => w.exercise === exercise)
+    .sort((a, b) => a.date.localeCompare(b.date));
+  if (!records.length) return;
+
+  const { offsetX, offsetY, scale } = state.exerciseChartTransform;
+  const metric = state.exerciseChartMetric;
+  let values;
+  if (metric === 'maxWeight') {
+    values = records.map(w => Math.max(...w.sets.map(s => Number(s.weight) || 0)));
+  } else {
+    values = records.map(w => workoutVolume(w));
+  }
+
+  const minVal = Math.min(...values);
+  const maxVal = Math.max(...values);
+  const range = Math.max(1, maxVal - minVal);
+  const stepX = (width - 80) / (records.length - 1 || 1);
+
+  ctx.save();
+  ctx.translate(offsetX, offsetY);
+  ctx.scale(scale, scale);
+
+  // Сетка
+  ctx.strokeStyle = "#2a3040";
+  ctx.lineWidth = 0.5;
+  const gridLines = 5;
+  for (let i = 0; i <= gridLines; i++) {
+    const y = 20 + ((height - 60) / gridLines) * i;
+    ctx.beginPath();
+    ctx.moveTo(40, y);
+    ctx.lineTo(width - 20, y);
+    ctx.stroke();
+  }
+
+  // Оси
+  ctx.strokeStyle = "#5a6070";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(40, 20);
+  ctx.lineTo(40, height - 30);
+  ctx.lineTo(width - 20, height - 30);
+  ctx.stroke();
+
+  // Подписи оси Y
+  ctx.fillStyle = "#a5adb8";
+  ctx.font = "10px Segoe UI";
+  for (let i = 0; i <= 4; i++) {
+    const val = minVal + (range / 4) * i;
+    const y = height - 30 - ((val - minVal) / range) * (height - 60);
+    ctx.fillText(formatWeight(val), 5, y + 4);
+  }
+
+  // Линия графика
+  ctx.strokeStyle = state.settings.accent;
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  records.forEach((w, i) => {
+    const x = 40 + stepX * i;
+    const y = height - 30 - ((values[i] - minVal) / range) * (height - 60);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Точки и подписи
+  records.forEach((w, i) => {
+    const x = 40 + stepX * i;
+    const y = height - 30 - ((values[i] - minVal) / range) * (height - 60);
+
+    // Точка
+    ctx.fillStyle = state.settings.accent;
+    ctx.beginPath();
+    ctx.arc(x, y, 4.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Значение над точкой
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 9px Segoe UI";
+    ctx.fillText(metric === 'maxWeight' ? formatWeight(values[i]) : formatWeight(values[i]), x - 15, y - 10);
+
+    // Дата под осью
+    ctx.fillStyle = "#a5adb8";
+    ctx.font = "9px Segoe UI";
+    const dateStr = new Date(w.date + "T12:00:00").toLocaleDateString("ru-RU", { day: "2-digit", month: "short" });
+    ctx.fillText(dateStr, x - 20, height - 12);
+  });
+
+  ctx.restore();
+}
+
+function drawBodyChart() {
+  const canvas = qs("#bodyChart");
+  const ctx = canvas.getContext("2d");
+  const width = canvas.width;
+  const height = canvas.height;
+  ctx.clearRect(0, 0, width, height);
+
+  const records = state.bodyWeights
+    .slice()
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(-state.bodyZoomCount);
+  if (!records.length) return;
+
+  const { offsetX, offsetY, scale } = state.bodyChartTransform;
+  const values = records.map(r => Number(r.weight));
+  const minVal = Math.min(...values) - 2;
+  const maxVal = Math.max(...values) + 2;
+  const range = Math.max(1, maxVal - minVal);
+  const stepX = (width - 60) / (records.length - 1 || 1);
+
+  ctx.save();
+  ctx.translate(offsetX, offsetY);
+  ctx.scale(scale, scale);
+
+  // Сетка
+  ctx.strokeStyle = "#2a3040";
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i <= 4; i++) {
+    const y = 20 + ((height - 60) / 4) * i;
+    ctx.beginPath();
+    ctx.moveTo(30, y);
+    ctx.lineTo(width - 20, y);
+    ctx.stroke();
+  }
+
+  // Оси
+  ctx.strokeStyle = "#5a6070";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(30, 20);
+  ctx.lineTo(30, height - 30);
+  ctx.lineTo(width - 20, height - 30);
+  ctx.stroke();
+
+  // Подписи Y
+  ctx.fillStyle = "#a5adb8";
+  ctx.font = "10px Segoe UI";
+  for (let i = 0; i <= 4; i++) {
+    const val = minVal + (range / 4) * i;
+    const y = height - 30 - ((val - minVal) / range) * (height - 60);
+    ctx.fillText(formatWeight(val), 2, y + 4);
+  }
+
+  // Линия
+  ctx.strokeStyle = state.settings.accent;
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  records.forEach((r, i) => {
+    const x = 30 + stepX * i;
+    const y = height - 30 - ((Number(r.weight) - minVal) / range) * (height - 60);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Точки и подписи
+  records.forEach((r, i) => {
+    const x = 30 + stepX * i;
+    const y = height - 30 - ((Number(r.weight) - minVal) / range) * (height - 60);
+
+    ctx.fillStyle = state.settings.accent;
+    ctx.beginPath();
+    ctx.arc(x, y, 4.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 9px Segoe UI";
+    ctx.fillText(formatWeight(Number(r.weight)), x - 15, y - 10);
+
+    ctx.fillStyle = "#a5adb8";
+    ctx.font = "9px Segoe UI";
+    const dateStr = new Date(r.date + "T12:00:00").toLocaleDateString("ru-RU", { day: "2-digit", month: "short" });
+    ctx.fillText(dateStr, x - 20, height - 12);
+  });
+
+  ctx.restore();
+}
+      // Полноэкранный график
+      function expandChart() {
         const exercise = qs("#exerciseChartSelect").value;
         if (!exercise) return;
+        // Создаём модальное окно с увеличенным canvas
+        const modal = document.createElement('div');
+        modal.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.95); z-index:50; display:flex; flex-direction:column; align-items:center; justify-content:center;';
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = '✕';
+        closeBtn.style.cssText = 'position:absolute; top:20px; right:20px; background:var(--danger); color:white; width:44px; height:44px; border-radius:50%; font-size:20px;';
+        const canvas = document.createElement('canvas');
+        canvas.width = window.innerWidth - 40;
+        canvas.height = window.innerHeight - 120;
+        canvas.style.border = '1px solid var(--line)';
+        canvas.style.borderRadius = '8px';
+        canvas.style.background = '#12151a';
+        modal.appendChild(closeBtn);
+        modal.appendChild(canvas);
+        document.body.appendChild(modal);
+
+        const ctx = canvas.getContext('2d');
         const records = state.workouts.filter(w => w.exercise === exercise).sort((a,b) => a.date.localeCompare(b.date));
-        if (!records.length) return;
-        const values = records.map(w => workoutVolume(w));
+        const metric = state.exerciseChartMetric;
+        let values;
+        if (metric === 'maxWeight') {
+          values = records.map(w => Math.max(...w.sets.map(s => Number(s.weight) || 0)));
+        } else {
+          values = records.map(w => workoutVolume(w));
+        }
         const min = Math.min(...values);
         const max = Math.max(...values);
         const range = Math.max(1, max - min);
-        const step = records.length === 1 ? 0 : (canvas.width - 60) / (records.length - 1);
-        ctx.strokeStyle = state.settings.accent;
-        ctx.lineWidth = 3;
+        const step = records.length === 1 ? 0 : (canvas.width - 80) / (records.length - 1);
+        const points = records.map((w, i) => ({
+          x: 40 + step * i,
+          y: canvas.height - 30 - ((values[i] - min) / range) * (canvas.height - 60),
+          date: w.date,
+          value: values[i]
+        }));
+        // Оси
+        ctx.strokeStyle = "#303742";
+        ctx.lineWidth = 1;
         ctx.beginPath();
-        records.forEach((w, i) => {
-          const x = 30 + step * i;
-          const y = canvas.height - 20 - ((workoutVolume(w) - min) / range) * (canvas.height - 40);
-          i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-        });
+        ctx.moveTo(40, 20);
+        ctx.lineTo(40, canvas.height - 20);
+        ctx.lineTo(canvas.width - 20, canvas.height - 20);
         ctx.stroke();
+        ctx.fillStyle = "#a5adb8";
+        ctx.font = "14px Segoe UI";
+        ctx.fillText(metric === 'maxWeight' ? 'Макс. вес' : 'Тоннаж', 60, 40);
+        ctx.fillText('Дата', canvas.width - 80, canvas.height - 10);
+        // Линия
+        ctx.strokeStyle = state.settings.accent;
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        points.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+        ctx.stroke();
+        // Точки
+        points.forEach(p => {
+          ctx.fillStyle = state.settings.accent;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 6, 0, Math.PI*2);
+          ctx.fill();
+          ctx.fillStyle = "#f3f5f7";
+          ctx.font = "12px Segoe UI";
+          ctx.fillText(formatDate(p.date), p.x-20, p.y-15);
+        });
+
+        closeBtn.addEventListener('click', () => document.body.removeChild(modal));
+        modal.addEventListener('click', (e) => { if (e.target === modal) document.body.removeChild(modal); });
       }
 
       function renderHistory() {
@@ -564,30 +988,110 @@
 
       function renderBodyWeights() {
         const records = state.bodyWeights.slice().sort((a,b) => b.date.localeCompare(a.date));
-        qs("#bodyWeightList").innerHTML = records.length ? records.map(r => `<div class="entry"><div class="entry-head"><div><h4>${formatWeight(Number(r.weight))}</h4><time>${formatDate(r.date)}</time></div><button class="icon-button" data-delete-body="${r.id}"><svg class="icon"><use href="#icon-trash"></use></svg></button></div></div>`).join("") : emptyState("Нет записей веса");
+        qs("#bodyWeightList").innerHTML = records.length ? records.map(r => {
+          const photoHtml = r.photo ? `<img src="${r.photo}" class="photo-thumb" data-photo="${r.photo}" style="width:60px; height:60px; object-fit:cover; border-radius:6px; margin-top:4px; cursor:pointer;">` : '';
+          return `<div class="entry"><div class="entry-head"><div><h4>${formatWeight(Number(r.weight))}</h4><time>${formatDate(r.date)}</time></div><button class="icon-button" data-delete-body="${r.id}"><svg class="icon"><use href="#icon-trash"></use></svg></button></div>${photoHtml}</div>`;
+        }).join("") : emptyState("Нет записей веса");
         drawBodyChart();
       }
 
-      function drawBodyChart() {
-        const canvas = qs("#bodyChart");
-        const ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const records = state.bodyWeights.slice().sort((a,b) => a.date.localeCompare(b.date)).slice(-12);
-        if (!records.length) return;
-        const values = records.map(r => Number(r.weight));
-        const min = Math.min(...values);
-        const max = Math.max(...values);
-        const range = Math.max(1, max - min);
-        const step = records.length === 1 ? 0 : (canvas.width - 60) / (records.length - 1);
-        ctx.strokeStyle = state.settings.accent;
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        records.forEach((r, i) => {
-          const x = 30 + step * i;
-          const y = canvas.height - 20 - ((Number(r.weight) - min) / range) * (canvas.height - 40);
-          i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      // Планы (функции без изменений)
+      function renderPlanList() {
+        let html = '';
+        for (let id in plans) {
+          const plan = plans[id];
+          html += `<div class="entry" style="cursor:pointer;" data-plan-id="${id}">
+            <div class="entry-head"><h4>${plan.name}</h4></div>
+            <div class="muted">${plan.description}</div>
+            <div class="actions" style="margin-top:8px;">
+              <button class="button secondary" data-start-plan="${id}">Начать тренировку</button>
+            </div>
+          </div>`;
+        }
+        qs("#planList").innerHTML = html;
+      }
+      function startPlan(planId) {
+        state.currentPlanId = planId;
+        state.planExercisesSets = {};
+        plans[planId].exercises.forEach(ex => { state.planExercisesSets[ex.name] = []; });
+        showPlanDetail();
+      }
+      function showPlanDetail() {
+        qs("#planListContainer").style.display = 'none';
+        qs("#planDetailContainer").style.display = 'block';
+        qs("#planDetailTitle").textContent = plans[state.currentPlanId].name;
+        let html = '';
+        const exercises = plans[state.currentPlanId].exercises;
+        exercises.forEach((ex) => {
+          html += `<div class="entry" style="margin-bottom:12px;" data-exercise-name="${escapeHtml(ex.name)}">
+            <div class="entry-head"><h4>${escapeHtml(ex.name)}</h4></div>
+            <div class="muted">${escapeHtml(ex.desc)}</div>
+            <div class="exercise-gif">
+              ${ex.gif ? `<img src="${escapeHtml(ex.gif)}" alt="Техника ${escapeHtml(ex.name)}">` : `<div class="placeholder">GIF появится позже</div>`}
+            </div>
+            <div class="sets plan-exercise-sets" data-exercise="${escapeHtml(ex.name)}"></div>
+            <div class="actions" style="margin-top:6px;">
+              <button class="button secondary add-plan-set-btn" data-exercise="${escapeHtml(ex.name)}"><svg class="icon"><use href="#icon-plus"></use></svg>Добавить подход</button>
+            </div>
+          </div>`;
         });
-        ctx.stroke();
+        qs("#planExercises").innerHTML = html;
+        for (let exName in state.planExercisesSets) {
+          const sets = state.planExercisesSets[exName];
+          const container = qs(`.plan-exercise-sets[data-exercise="${exName}"]`);
+          if (container && sets.length > 0) {
+            renderPlanExerciseSets(exName, sets, container);
+          }
+        }
+      }
+      function renderPlanExerciseSets(exName, sets, container) {
+        let html = '';
+        sets.forEach((set, idx) => {
+          html += `<div class="set-row">
+            <div class="set-number">${idx+1}</div>
+            <div class="field"><input type="number" min="0" step="0.5" value="${escapeHtml(set.weight)}" data-exercise="${escapeHtml(exName)}" data-set-index="${idx}" data-kind="weight" placeholder="кг"></div>
+            <div class="field"><input type="number" min="1" step="1" value="${escapeHtml(set.reps)}" data-exercise="${escapeHtml(exName)}" data-set-index="${idx}" data-kind="reps" placeholder="повт"></div>
+            <button class="icon-button remove-plan-set-btn" data-exercise="${escapeHtml(exName)}" data-set-index="${idx}"><svg class="icon"><use href="#icon-trash"></use></svg></button>
+          </div>`;
+        });
+        container.innerHTML = html;
+      }
+      function addPlanSet(exName) {
+        if (!state.planExercisesSets[exName]) state.planExercisesSets[exName] = [];
+        state.planExercisesSets[exName].push({ id: uid(), weight: "", reps: "" });
+        const container = qs(`.plan-exercise-sets[data-exercise="${exName}"]`);
+        if (container) renderPlanExerciseSets(exName, state.planExercisesSets[exName], container);
+      }
+      function removePlanSet(exName, setIndex) {
+        state.planExercisesSets[exName].splice(setIndex, 1);
+        const container = qs(`.plan-exercise-sets[data-exercise="${exName}"]`);
+        if (container) renderPlanExerciseSets(exName, state.planExercisesSets[exName], container);
+      }
+      async function finishPlanWorkout() {
+        const plan = plans[state.currentPlanId];
+        if (!plan) return;
+        let savedCount = 0;
+        for (let ex of plan.exercises) {
+          const sets = state.planExercisesSets[ex.name] || [];
+          const validSets = sets.map(s => ({ weight: Number(s.weight)||0, reps: Number(s.reps)||0 })).filter(s => s.reps > 0);
+          if (validSets.length > 0) {
+            state.workouts.push({ id: uid(), date: todayIso(), exercise: ex.name, sets: validSets, notes: '' });
+            savedCount++;
+          }
+        }
+        if (savedCount === 0) { showToast("Нет завершённых подходов"); return; }
+        await saveEverywhere();
+        state.currentPlanId = null;
+        state.planExercisesSets = {};
+        showPlanList();
+        await refresh();
+        showToast(`Сохранено ${savedCount} упражнений`);
+      }
+      function showPlanList() {
+        qs("#planListContainer").style.display = 'block';
+        qs("#planDetailContainer").style.display = 'none';
+        state.currentPlanId = null;
+        state.planExercisesSets = {};
       }
 
       function setActiveView(view) {
@@ -600,6 +1104,10 @@
         qs("#viewSubtitle").textContent = viewCopy[view][1];
         if (view === "body") drawBodyChart();
         if (view === "history") { renderHistory(); drawExerciseChart(); }
+        if (view === "plans") {
+          if (state.currentPlanId) showPlanDetail();
+          else showPlanList();
+        }
         qs("#mobileMenu").classList.remove("open");
       }
 
@@ -611,32 +1119,15 @@
         renderBodyWeights();
       }
 
-      function resetDraft() {
-        state.draftSets = [{ id: uid(), weight:"", reps:"" }];
-        state.editingWorkoutId = null;
-        qs("#exerciseName").value = "";
-        qs("#workoutNotes").value = "";
-        qs("#workoutDate").value = todayIso();
-        qs("#saveWorkoutButton").innerHTML = `<svg class="icon"><use href="#icon-download"></use></svg>Сохранить`;
-        qs("#exerciseHint").textContent = "";
-        qs("#fillLastButton").style.display = "none";
-        renderSets();
-      }
+      const viewCopy = {
+        workout: ["Тренировка", "Запишите упражнение, добавьте подходы и сохраните результат."],
+        history: ["История", "Смотрите прошлые тренировки, сравнивайте объем и удаляйте лишнее."],
+        plans: ["Планы тренировок", "Выберите готовый план и сразу записывайте результаты."],
+        body: ["Вес тела", "Сохраняйте собственный вес и следите за динамикой."],
+        settings: ["Настройки", "Подстройте приложение под себя и управляйте данными."]
+      };
 
-      function fillFromLast() {
-        const ex = qs("#exerciseName").value.trim();
-        if (!ex) return;
-        const last = state.workouts.filter(w => w.exercise === ex).sort((a,b) => b.date.localeCompare(a.date))[0];
-        if (!last) { showToast("Нет истории"); return; }
-        state.draftSets = last.sets.map(s => ({ id: uid(), weight: s.weight, reps: s.reps }));
-        renderSets();
-        showToast("Заполнено");
-      }
-
-      function debounce(fn, delay) {
-        let timer;
-        return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), delay); };
-      }
+      function debounce(fn, delay) { let timer; return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), delay); }; }
 
       function initEvents() {
         qs("#burgerBtn").addEventListener("click", () => qs("#mobileMenu").classList.toggle("open"));
@@ -688,100 +1179,31 @@
           showToast("Сохранено");
         });
 
-        // Таймер с паузой и вспышкой
+        // Таймер
         let restTimerId = null;
         let restSecondsLeft = 180;
         const restBtn = qs("#restTimerButton");
         const restPauseBtn = qs("#restPauseButton");
         const minsInput = qs("#restMinutes");
         const secsInput = qs("#restSeconds");
-
-        function updateTimerDisplay() {
-          const min = Math.floor(restSecondsLeft / 60);
-          const sec = restSecondsLeft % 60;
-          restBtn.textContent = `⏱ ${min}:${sec.toString().padStart(2, '0')}`;
-        }
-
-        function stopTimer() {
-          if (restTimerId) { clearInterval(restTimerId); restTimerId = null; }
-          restPauseBtn.innerHTML = '<svg class="icon"><use href="#icon-pause"></use></svg>';
-          restPauseBtn.disabled = true;
-          restBtn.disabled = false;
-        }
-
-        function startTimer() {
-          if (restSecondsLeft <= 0) return;
-          restBtn.disabled = true;
-          restPauseBtn.disabled = false;
-          restPauseBtn.innerHTML = '<svg class="icon"><use href="#icon-pause"></use></svg>';
-          restTimerId = setInterval(() => {
-            restSecondsLeft--;
-            updateTimerDisplay();
-            if (restSecondsLeft <= 0) {
-              stopTimer();
-              updateTimerDisplay();
-              flashScreen();
-              showToast("Отдых окончен!");
-              restSecondsLeft = (parseInt(minsInput.value)||3)*60 + (parseInt(secsInput.value)||0);
-              updateTimerDisplay();
-            }
-          }, 1000);
-        }
-
-        restBtn.addEventListener("click", () => {
-          if (restTimerId) {
-            // Остановить совсем
-            stopTimer();
-            restSecondsLeft = (parseInt(minsInput.value)||3)*60 + (parseInt(secsInput.value)||0);
-            updateTimerDisplay();
-          } else {
-            // Запустить
-            if (restSecondsLeft <= 0) {
-              restSecondsLeft = (parseInt(minsInput.value)||3)*60 + (parseInt(secsInput.value)||0);
-              updateTimerDisplay();
-            }
-            startTimer();
-          }
-        });
-
-        restPauseBtn.addEventListener("click", () => {
-          if (!restTimerId) return;
-          // Пауза/продолжить
-          clearInterval(restTimerId);
-          restTimerId = null;
-          restPauseBtn.innerHTML = '<svg class="icon"><use href="#icon-play"></use></svg>';
-          restPauseBtn.onclick = () => {
-            restPauseBtn.innerHTML = '<svg class="icon"><use href="#icon-pause"></use></svg>';
-            startTimer();
-          };
-        });
-
-        minsInput.addEventListener("change", () => {
-          if (!restTimerId) {
-            restSecondsLeft = (parseInt(minsInput.value)||3)*60 + (parseInt(secsInput.value)||0);
-            updateTimerDisplay();
-          }
-        });
-        secsInput.addEventListener("change", () => {
-          if (!restTimerId) {
-            restSecondsLeft = (parseInt(minsInput.value)||3)*60 + (parseInt(secsInput.value)||0);
-            updateTimerDisplay();
-          }
-        });
+        function updateTimerDisplay() { const m = Math.floor(restSecondsLeft/60), s = restSecondsLeft%60; restBtn.textContent = `⏱ ${m}:${s.toString().padStart(2,'0')}`; }
+        function stopTimer() { if(restTimerId){clearInterval(restTimerId); restTimerId=null;} restPauseBtn.innerHTML='<svg class="icon"><use href="#icon-pause"></use></svg>'; restPauseBtn.disabled=true; restBtn.disabled=false; }
+        function startTimer() { if(restSecondsLeft<=0) return; restBtn.disabled=true; restPauseBtn.disabled=false; restPauseBtn.innerHTML='<svg class="icon"><use href="#icon-pause"></use></svg>'; restTimerId=setInterval(()=>{ restSecondsLeft--; updateTimerDisplay(); if(restSecondsLeft<=0){ stopTimer(); updateTimerDisplay(); flashScreen(); showToast("Отдых окончен!"); restSecondsLeft=(parseInt(minsInput.value)||3)*60+(parseInt(secsInput.value)||0); updateTimerDisplay(); } },1000); }
+        restBtn.addEventListener("click", ()=>{ if(restTimerId){ stopTimer(); restSecondsLeft=(parseInt(minsInput.value)||3)*60+(parseInt(secsInput.value)||0); updateTimerDisplay(); } else { if(restSecondsLeft<=0){ restSecondsLeft=(parseInt(minsInput.value)||3)*60+(parseInt(secsInput.value)||0); updateTimerDisplay(); } startTimer(); } });
+        restPauseBtn.addEventListener("click", ()=>{ if(!restTimerId) return; clearInterval(restTimerId); restTimerId=null; restPauseBtn.innerHTML='<svg class="icon"><use href="#icon-play"></use></svg>'; restPauseBtn.onclick=()=>{ restPauseBtn.innerHTML='<svg class="icon"><use href="#icon-pause"></use></svg>'; startTimer(); }; });
+        minsInput.addEventListener("change", ()=>{ if(!restTimerId){ restSecondsLeft=(parseInt(minsInput.value)||3)*60+(parseInt(secsInput.value)||0); updateTimerDisplay(); } });
+        secsInput.addEventListener("change", ()=>{ if(!restTimerId){ restSecondsLeft=(parseInt(minsInput.value)||3)*60+(parseInt(secsInput.value)||0); updateTimerDisplay(); } });
 
         qs("#historySearch").addEventListener("input", debounce(renderHistory, 300));
         qs("#historySort").addEventListener("change", renderHistory);
-        qs("#exerciseChartSelect").addEventListener("change", drawExerciseChart);
+        qs("#exerciseChartSelect").addEventListener("change", () => {
+          state.exerciseChartTransform = { offsetX: 0, offsetY: 0, scale: 1 };
+          drawExerciseChart();
+        });
 
         qs("#historyList").addEventListener("click", async e => {
           const delBtn = e.target.closest("[data-delete-workout]");
-          if (delBtn) {
-            state.workouts = state.workouts.filter(w => w.id !== delBtn.dataset.deleteWorkout);
-            await saveEverywhere();
-            await refresh();
-            showToast("Удалено");
-            return;
-          }
+          if (delBtn) { state.workouts = state.workouts.filter(w => w.id !== delBtn.dataset.deleteWorkout); await saveEverywhere(); await refresh(); showToast("Удалено"); return; }
           const editBtn = e.target.closest("[data-edit-workout]");
           if (editBtn) {
             const workout = state.workouts.find(w => w.id === editBtn.dataset.editWorkout);
@@ -798,15 +1220,47 @@
           }
         });
 
+        // Планы
+        qs("#planList").addEventListener("click", e => { const btn = e.target.closest("[data-start-plan]"); if (btn) startPlan(btn.dataset.startPlan); });
+        qs("#backToPlans").addEventListener("click", showPlanList);
+        qs("#planExercises").addEventListener("click", e => {
+          const addBtn = e.target.closest(".add-plan-set-btn"); if (addBtn) addPlanSet(addBtn.dataset.exercise);
+          const removeBtn = e.target.closest(".remove-plan-set-btn"); if (removeBtn) { const ex=removeBtn.dataset.exercise, idx=parseInt(removeBtn.dataset.setIndex); removePlanSet(ex, idx); }
+        });
+        qs("#planExercises").addEventListener("input", e => {
+          const inp = e.target.closest("[data-exercise][data-set-index]");
+          if (!inp) return;
+          const ex = inp.dataset.exercise, idx = parseInt(inp.dataset.setIndex), kind = inp.dataset.kind;
+          const sets = state.planExercisesSets[ex];
+          if (sets && sets[idx]) sets[idx][kind] = inp.value;
+        });
+        qs("#finishPlanWorkout").addEventListener("click", finishPlanWorkout);
+
+        // Вес тела + фото
+        qs("#bodyPhotoInput").addEventListener("change", (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            state.bodyPhotoData = ev.target.result;
+            qs("#bodyPhotoPreview").src = state.bodyPhotoData;
+            qs("#bodyPhotoPreview").style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        });
         qs("#bodyWeightForm").addEventListener("submit", async e => {
           e.preventDefault();
           const weight = Number(qs("#bodyWeightInput").value);
           if (!Number.isFinite(weight) || weight <= 0) { showToast("Неверный вес"); return; }
           const date = qs("#bodyDate").value || todayIso();
+          const photo = state.bodyPhotoData || null;
           const existing = state.bodyWeights.find(r => r.date === date);
-          if (existing) existing.weight = weight;
-          else state.bodyWeights.push({ id: uid(), date, weight });
+          if (existing) { existing.weight = weight; existing.photo = photo; }
+          else { state.bodyWeights.push({ id: uid(), date, weight, photo }); }
           qs("#bodyWeightInput").value = "";
+          qs("#bodyPhotoInput").value = "";
+          qs("#bodyPhotoPreview").style.display = 'none';
+          state.bodyPhotoData = null;
           await saveEverywhere();
           await refresh();
           showToast("Вес сохранён");
@@ -814,75 +1268,141 @@
 
         qs("#bodyWeightList").addEventListener("click", async e => {
           const delBtn = e.target.closest("[data-delete-body]");
-          if (!delBtn) return;
-          state.bodyWeights = state.bodyWeights.filter(r => r.id !== delBtn.dataset.deleteBody);
-          await saveEverywhere();
-          await refresh();
-          showToast("Удалено");
+          if (delBtn) { state.bodyWeights = state.bodyWeights.filter(r => r.id !== delBtn.dataset.deleteBody); await saveEverywhere(); await refresh(); showToast("Удалено"); return; }
+          const img = e.target.closest(".photo-thumb");
+          if (img) {
+            qs("#photoFullImage").src = img.dataset.photo;
+            qs("#photoFullscreen").style.display = 'flex';
+          }
+        });
+        qs("#closePhotoBtn").addEventListener("click", () => qs("#photoFullscreen").style.display = 'none');
+        qs("#photoFullscreen").addEventListener("click", e => { if (e.target === qs("#photoFullscreen")) qs("#photoFullscreen").style.display = 'none'; });
+
+        // Зум и панорамирование
+        setupChartInteraction("#exerciseChart", 'exerciseChartTransform', drawExerciseChart);
+        setupChartInteraction("#bodyChart", 'bodyChartTransform', drawBodyChart);
+
+        // Кнопка развернуть график
+      qs("#expandChartBtn").addEventListener("click", () => {
+  const exercise = qs("#exerciseChartSelect").value;
+  if (!exercise) return;
+
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.95); z-index:50; display:flex; flex-direction:column; align-items:center; justify-content:center;';
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = '✕';
+  closeBtn.style.cssText = 'position:absolute; top:20px; right:20px; background:var(--danger); color:white; width:44px; height:44px; border-radius:50%; font-size:20px;';
+  const canvas = document.createElement('canvas');
+  canvas.width = window.innerWidth - 40;
+  canvas.height = window.innerHeight - 120;
+  canvas.style.border = '1px solid var(--line)';
+  canvas.style.borderRadius = '8px';
+  canvas.style.background = '#12151a';
+  modal.appendChild(closeBtn);
+  modal.appendChild(canvas);
+  document.body.appendChild(modal);
+
+  const ctx = canvas.getContext('2d');
+  const records = state.workouts.filter(w => w.exercise === exercise).sort((a,b) => a.date.localeCompare(b.date));
+  const metric = state.exerciseChartMetric;
+  let values;
+  if (metric === 'maxWeight') {
+    values = records.map(w => Math.max(...w.sets.map(s => Number(s.weight) || 0)));
+  } else {
+    values = records.map(w => workoutVolume(w));
+  }
+  const minVal = Math.min(...values);
+  const maxVal = Math.max(...values);
+  const range = Math.max(1, maxVal - minVal);
+  const stepX = records.length > 1 ? (canvas.width - 80) / (records.length - 1) : 0;
+
+  // Рисуем на большом canvas так же, как в обычном графике (сетка, оси, точки, даты)
+  ctx.fillStyle = "#12151a";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.strokeStyle = "#2a3040";
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i <= 4; i++) {
+    const y = 20 + ((canvas.height - 60) / 4) * i;
+    ctx.beginPath();
+    ctx.moveTo(40, y);
+    ctx.lineTo(canvas.width - 20, y);
+    ctx.stroke();
+  }
+
+  ctx.strokeStyle = "#5a6070";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(40, 20);
+  ctx.lineTo(40, canvas.height - 30);
+  ctx.lineTo(canvas.width - 20, canvas.height - 30);
+  ctx.stroke();
+
+  ctx.fillStyle = "#a5adb8";
+  ctx.font = "10px Segoe UI";
+  for (let i = 0; i <= 4; i++) {
+    const val = minVal + (range / 4) * i;
+    const y = canvas.height - 30 - ((val - minVal) / range) * (canvas.height - 60);
+    ctx.fillText(formatWeight(val), 5, y + 4);
+  }
+
+  ctx.strokeStyle = state.settings.accent;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  records.forEach((w, i) => {
+    const x = 40 + stepX * i;
+    const y = canvas.height - 30 - ((values[i] - minVal) / range) * (canvas.height - 60);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  records.forEach((w, i) => {
+    const x = 40 + stepX * i;
+    const y = canvas.height - 30 - ((values[i] - minVal) / range) * (canvas.height - 60);
+
+    ctx.fillStyle = state.settings.accent;
+    ctx.beginPath();
+    ctx.arc(x, y, 6, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 11px Segoe UI";
+    ctx.fillText(formatWeight(values[i]), x - 20, y - 12);
+
+    ctx.fillStyle = "#a5adb8";
+    ctx.font = "11px Segoe UI";
+    const dateStr = new Date(w.date + "T12:00:00").toLocaleDateString("ru-RU", { day: "2-digit", month: "short" });
+    ctx.fillText(dateStr, x - 25, canvas.height - 12);
+  });
+
+  closeBtn.addEventListener('click', () => document.body.removeChild(modal));
+  modal.addEventListener('click', (e) => { if (e.target === modal) document.body.removeChild(modal); });
+});
+
+        // Переключение метрики
+        qs("#metricToggleVolume").addEventListener("click", () => {
+          state.exerciseChartMetric = 'volume';
+          qs("#metricToggleVolume").classList.add('active');
+          qs("#metricToggleMaxWeight").classList.remove('active');
+          drawExerciseChart();
+        });
+        qs("#metricToggleMaxWeight").addEventListener("click", () => {
+          state.exerciseChartMetric = 'maxWeight';
+          qs("#metricToggleMaxWeight").classList.add('active');
+          qs("#metricToggleVolume").classList.remove('active');
+          drawExerciseChart();
         });
 
-        qsa("[data-unit]").forEach(b => b.addEventListener("click", async () => {
-          state.settings.unit = b.dataset.unit;
-          await saveEverywhere();
-          await refresh();
-          showToast("Единицы: " + b.dataset.unit);
-        }));
-        
-        qsa(".swatch").forEach(b => b.addEventListener("click", async () => {
-          state.settings.accent = b.dataset.accent;
-          await saveEverywhere();
-          await refresh();
-        }));
-        
-        qs("#largeTextToggle").addEventListener("change", async e => {
-          state.settings.largeText = e.target.checked;
-          await saveEverywhere();
-          await refresh();
-        });
-        
-        qs("#compactToggle").addEventListener("change", async e => {
-          state.settings.compact = e.target.checked;
-          await saveEverywhere();
-          await refresh();
-        });
-        
-        qs("#exportButton").addEventListener("click", () => {
-          const blob = new Blob([JSON.stringify({ workouts: state.workouts, bodyWeights: state.bodyWeights, settings: state.settings }, null, 2)], { type: "application/json" });
-          const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "koncheniy-data.json"; a.click();
-        });
-        
-        qs("#exportCSVButton").addEventListener("click", () => {
-          let csv = "Дата;Упражнение;Подход;Вес;Повторы\n";
-          state.workouts.forEach(w => w.sets.forEach((s, i) => csv += `${w.date};${w.exercise};${i+1};${s.weight};${s.reps}\n`));
-          const blob = new Blob([csv], { type: "text/csv" });
-          const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "koncheniy-workouts.csv"; a.click();
-        });
-        
-        qs("#importInput").addEventListener("change", async e => {
-          const file = e.target.files[0];
-          if (!file) return;
-          try {
-            const text = await file.text();
-            const data = JSON.parse(text);
-            state.workouts = Array.isArray(data.workouts) ? data.workouts : [];
-            state.bodyWeights = Array.isArray(data.bodyWeights) ? data.bodyWeights : [];
-            state.settings = Object.assign(state.settings, data.settings || {});
-            await saveEverywhere();
-            await refresh();
-            showToast("Импортировано");
-          } catch { showToast("Ошибка файла"); }
-          e.target.value = "";
-        });
-        
-        qs("#clearButton").addEventListener("click", async () => {
-          if (!confirm("Удалить ВСЕ данные?")) return;
-          state.workouts = [];
-          state.bodyWeights = [];
-          await saveEverywhere();
-          await refresh();
-          showToast("Всё очищено");
-        });
-        
+        // Настройки
+        qsa("[data-unit]").forEach(b => b.addEventListener("click", async () => { state.settings.unit = b.dataset.unit; await saveEverywhere(); await refresh(); showToast("Единицы: " + b.dataset.unit); }));
+        qsa(".swatch").forEach(b => b.addEventListener("click", async () => { state.settings.accent = b.dataset.accent; await saveEverywhere(); await refresh(); }));
+        qs("#largeTextToggle").addEventListener("change", async e => { state.settings.largeText = e.target.checked; await saveEverywhere(); await refresh(); });
+        qs("#compactToggle").addEventListener("change", async e => { state.settings.compact = e.target.checked; await saveEverywhere(); await refresh(); });
+        qs("#exportButton").addEventListener("click", () => { const blob = new Blob([JSON.stringify({ workouts: state.workouts, bodyWeights: state.bodyWeights, settings: state.settings }, null, 2)], { type: "application/json" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "koncheniy-data.json"; a.click(); });
+        qs("#exportCSVButton").addEventListener("click", () => { let csv = "Дата;Упражнение;Подход;Вес;Повторы\n"; state.workouts.forEach(w => w.sets.forEach((s, i) => csv += `${w.date};${w.exercise};${i+1};${s.weight};${s.reps}\n`)); const blob = new Blob([csv], { type: "text/csv" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "koncheniy-workouts.csv"; a.click(); });
+        qs("#importInput").addEventListener("change", async e => { const file = e.target.files[0]; if(!file) return; try { const text = await file.text(); const data = JSON.parse(text); state.workouts = Array.isArray(data.workouts) ? data.workouts : []; state.bodyWeights = Array.isArray(data.bodyWeights) ? data.bodyWeights : []; state.settings = Object.assign(state.settings, data.settings || {}); await saveEverywhere(); await refresh(); showToast("Импортировано"); } catch { showToast("Ошибка файла"); } e.target.value = ""; });
+        qs("#clearButton").addEventListener("click", async () => { if(!confirm("Удалить ВСЕ данные?")) return; state.workouts = []; state.bodyWeights = []; await saveEverywhere(); await refresh(); showToast("Всё очищено"); });
+
         window.addEventListener("resize", () => { drawBodyChart(); drawExerciseChart(); });
         window.addEventListener("beforeunload", () => saveEverywhere());
         window.addEventListener("pagehide", () => saveEverywhere());
@@ -894,6 +1414,7 @@
         resetDraft();
         initEvents();
         await refresh();
+        renderPlanList();
       })();
     })();
   </script>
